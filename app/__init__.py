@@ -10,11 +10,13 @@ def create_app():
     from .routes.mentoring import mentoring_bp
     from .routes.matching import matching_bp
     from .routes.messages import messages_bp
+    from .routes.dashboard import dashboard_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(mentoring_bp)
-    app.register_blueprint(matching_bp)
+    app.register_blueprint(matching_bp)   
     app.register_blueprint(messages_bp)
+    app.register_blueprint(dashboard_bp)
 
     return app
