@@ -1,7 +1,15 @@
 from flask import Blueprint
 
-dashboard_bp = Blueprint('dashboard', __name__)
+competences_bp = Blueprint('competences', __name__)
 
-@dashboard_bp.route('/dashboard')
-def dashboard():
+@competences_bp.route('/competences')
+def index():
+    pass
+
+@competences_bp.route('/competences/ajouter')
+def ajouter():
+    pass
+
+@competences_bp.route('/competences/supprimer')
+def supprimer():
     pass
