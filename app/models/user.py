@@ -27,3 +27,23 @@ def get_user_by_email(email):
     user = cursor.fetchone()
     conn.close()
     return user
+
+
+def get_user_by_telephone(telephone):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM utilisateur WHERE telephone = %s", (telephone,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+
+def update_password(user_id, mot_de_passe):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE utilisateur SET mot_de_passe = %s WHERE id = %s",
+        (mot_de_passe, user_id),
+    )
+    conn.commit()
+    conn.close()
