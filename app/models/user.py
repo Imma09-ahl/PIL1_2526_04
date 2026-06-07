@@ -66,5 +66,5 @@ def get_user_full_profile(user_id):
         'user': user,
         'forces': forces,
         'faiblesses': faiblesses,
-        'disponibilites': []  # TODO: quand le module dispo sera prêt
+        'disponibilites': [],
     }

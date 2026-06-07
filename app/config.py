@@ -4,4 +4,4 @@ class Config:
     MYSQL_USER = "root"
     MYSQL_PASSWORD = ""
     MYSQL_DB = "mentorlink"
-    MYSQL_PORT = 3307     
+    MYSQL_PORT = 3306     

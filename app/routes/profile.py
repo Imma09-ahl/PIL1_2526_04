@@ -15,7 +15,7 @@ def view_profile():
     
     if not profile:
         flash("Profil non trouvé", "error")
-        return redirect(url_for('dashboard.index'))
+        return redirect(url_for('profile.view_profile'))
     
     # TEMPORAIRE: toujours "son propre profil" pour tester
     is_own_profile = True
@@ -33,7 +33,7 @@ def view_other_profile(user_id):
     
     if not profile:
         flash("Utilisateur non trouvé", "error")
-        return redirect(url_for('dashboard.index'))
+        return redirect(url_for('profile.view_profile'))
     
     return render_template('profile/view.html', 
                          profile=profile, 
