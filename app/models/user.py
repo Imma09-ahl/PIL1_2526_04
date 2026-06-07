@@ -5,6 +5,7 @@ def get_db():
     conn = mysql.connector.connect(
         host=current_app.config['MYSQL_HOST'],
         user=current_app.config['MYSQL_USER'],
+        port=current_app.config['MYSQL_PORT'],
         password=current_app.config['MYSQL_PASSWORD'],
         database=current_app.config['MYSQL_DB']
     )
