@@ -27,3 +27,43 @@ def get_user_by_email(email):
     user = cursor.fetchone()
     conn.close()
     return user
+def get_user_by_id(user_id):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM utilisateur WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+
+def update_user(user_id, nom, prenom, email, telephone, filiere, niveau, bio, photo):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE utilisateur 
+        SET nom = %s, prenom = %s, email = %s, telephone = %s, 
+            filiere = %s, niveau = %s, bio = %s, photo = %s
+        WHERE id = %s
+    """, (nom, prenom, email, telephone, filiere, niveau, bio, photo, user_id))
+    conn.commit()
+    conn.close()
+
+
+def get_user_full_profile(user_id):
+    """Récupère l'utilisateur + ses compétences"""
+    from .competences import get_competences
+    
+    user = get_user_by_id(user_id)
+    if not user:
+        return None
+    
+    competences = get_competences(user_id)
+    forces = [c for c in competences if c['type'] == 'fort']
+    faiblesses = [c for c in competences if c['type'] == 'faible']
+    
+    return {
+        'user': user,
+        'forces': forces,
+        'faiblesses': faiblesses,
+        'disponibilites': []  # TODO: quand le module dispo sera prêt
+    }

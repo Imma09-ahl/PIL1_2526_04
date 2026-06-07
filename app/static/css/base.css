@@ -5,6 +5,8 @@
     --nav-bg: #2c3e50;
     --nav-text: #ffffff;
     --card-bg: #f5f5f5;
+    --accent: #2e7d5a;        /* ← VERT PLUS CLAIR pour le mode clair */
+    --accent-hover: #1b5e41;  /* ← Version hover */
 }
 
 /* Mode sombre */
@@ -14,6 +16,8 @@
     --nav-bg: #16213e;
     --nav-text: #ffffff;
     --card-bg: #0f3460;
+    --accent: #00d9a5;        /* ← Vert néon (déjà là) */
+    --accent-hover: #00b894;  /* ← Version hover */
 }
 
 * {
