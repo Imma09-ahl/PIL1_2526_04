@@ -1,19 +1,23 @@
 /* Mode clair par défaut */
 :root {
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --nav-bg: #2c3e50;
+    --bg-color: #f9f9fb;
+    --text-color: #1a1c1d;
+    --nav-bg: #1a237e;
     --nav-text: #ffffff;
-    --card-bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --accent: #00c853;
+    --accent-hover: #00a844;
 }
 
 /* Mode sombre */
 [data-theme="dark"] {
-    --bg-color: #1a1a2e;
-    --text-color: #ffffff;
-    --nav-bg: #16213e;
+    --bg-color: #0a0f1e;
+    --text-color: #f9f9fb;
+    --nav-bg: #1a237e;
     --nav-text: #ffffff;
-    --card-bg: #0f3460;
+    --card-bg: #111827;
+    --accent: #00c853;
+    --accent-hover: #00a844;
 }
 
 * {

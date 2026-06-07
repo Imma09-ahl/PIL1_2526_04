@@ -1,6 +1,95 @@
 {% extends "base.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Profil - {{ profile.user.prenom }} {{ profile.user.nom }}{% endblock %}
 
 {% block content %}
+<div class="profile-container">
+    <!-- En-tête du profil -->
+    <div class="profile-header">
+        <div class="profile-photo">
+            {% if profile.user.photo %}
+                <img src="{{ url_for('static', filename='uploads/' + profile.user.photo) }}" alt="Photo de profil">
+            {% else %}
+                <div class="photo-placeholder">
+                    {{ profile.user.prenom[0] }}{{ profile.user.nom[0] }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="profile-info">
+            <h1>{{ profile.user.prenom }} {{ profile.user.nom }}</h1>
+            <span class="badge">{{ profile.user.filiere }} - {{ profile.user.niveau }}</span>
+            <p class="meta">📧 {{ profile.user.email }}</p>
+            {% if profile.user.telephone %}
+                <p class="meta">📞 {{ profile.user.telephone }}</p>
+            {% endif %}
+        </div>
+        
+        {% if is_own_profile %}
+        <div class="profile-actions">
+            <a href="{{ url_for('profile.edit_profile', user_id=profile.user.id) }}" class="btn-primary">
+                ✏️ Modifier
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Bio -->
+    {% if profile.user.bio %}
+    <div class="card">
+        <h2>📝 À propos</h2>
+        <p>{{ profile.user.bio }}</p>
+    </div>
+    {% endif %}
+    
+    <!-- Compétences -->
+    <div class="card">
+        <h2>🎯 Compétences & Besoins</h2>
+        <div class="competences-grid">
+            <div>
+                <h3>✅ Je peux aider en</h3>
+                {% if profile.forces %}
+                    <div class="tags">
+                        {% for f in profile.forces %}
+                            <span class="tag tag-force">{{ f.matiere }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty">Aucune compétence renseignée</p>
+                {% endif %}
+            </div>
+            <div>
+                <h3>❓ J'ai besoin d'aide en</h3>
+                {% if profile.faiblesses %}
+                    <div class="tags">
+                        {% for f in profile.faiblesses %}
+                            <span class="tag tag-weak">{{ f.matiere }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty">Aucun besoin renseigné</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Disponibilités -->
+    <div class="card">
+        <h2>📅 Disponibilités</h2>
+        {% if profile.disponibilites %}
+            <ul class="list">
+                {% for d in profile.disponibilites %}
+                    <li>
+                        <strong>{{ d.jour }}</strong>
+                        <span>{{ d.heure_debut }} - {{ d.heure_fin }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty">Aucune disponibilité renseignée</p>
+        {% endif %}
+    </div>
+    
+    <p class="footer-meta">Membre depuis {{ profile.user.created_at.strftime('%d/%m/%Y') if profile.user.created_at else 'récemment' }}</p>
+</div>
 {% endblock %}
