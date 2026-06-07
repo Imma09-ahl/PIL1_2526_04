@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Conversation - {% endblock %}
+
+{% block content %}
+<div class="conversation-container">
+    <h2>Conversation</h2>
+
+    <div class="messages-list">
+        {% for message in messages %}
+            <div class="message-item {% if message.expediteur_id == session.user_id %}message-moi{% else %}message-autre{% endif %}">
+                <span class="message-auteur">{{ message.prenom }} {{ message.nom }}</span>
+                <p class="message-contenu">{{ message.contenu }}</p>
+                <span class="message-date">{{ message.created_at }}</span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <form class="message-form" method="POST" action="/messages/{{ conversation_id }}">
+        <textarea name="contenu" placeholder="Écrire un message..." required></textarea>
+        <button type="submit">Envoyer</button>
+    </form>
+</div>
+{% endblock %}

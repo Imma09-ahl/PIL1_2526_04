@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Messages - {% endblock %}
+
+{% block content %}
+<div class="messages-container">
+    <h1>Mes conversations</h1>
+    {% if conversations %}
+        <ul class="conversations-list">
+        {% for conv in conversations %}
+            <li class="conversation-item">
+                <a href="/messages/{{ conv.id }}">
+                    {% if conv.utilisateur1_id == session.user_id %}
+                        {{ conv.prenom2 }} {{ conv.nom2 }}
+                    {% else %}
+                        {{ conv.prenom1 }} {{ conv.nom1 }}
+                    {% endif %}
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune conversation pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

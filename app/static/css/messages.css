@@ -1,0 +1,104 @@
+.messages-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.conversations-list {
+    list-style: none;
+    padding: 0;
+}
+
+.conversation-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border-left: 4px solid #4a90e2;
+}
+
+.conversation-item a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.conversation-item a:hover {
+    color: #4a90e2;
+}
+
+.conversation-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.messages-list {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background: #fafafa;
+}
+
+.message-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
+.message-moi {
+    background: #4a90e2;
+    color: white;
+    margin-left: auto;
+}
+
+.message-autre {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.message-auteur {
+    font-size: 12px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.message-date {
+    font-size: 11px;
+    opacity: 0.7;
+    display: block;
+    margin-top: 5px;
+}
+
+.message-form {
+    display: flex;
+    gap: 10px;
+}
+
+.message-form textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    height: 60px;
+}
+
+.message-form button {
+    padding: 10px 20px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.message-form button:hover {
+    background: #357abd;
+}
