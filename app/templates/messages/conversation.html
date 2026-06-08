@@ -2,12 +2,12 @@
 {% block title %}Conversation - {% endblock %}
 
 {% block content %}
-<div class="conversation-container">
+<div class="conversation-container" data-conversation-id="{{ conversation_id }}">
     <h2>Conversation</h2>
 
     <div class="messages-list">
         {% for message in messages %}
-            <div class="message-item {% if message.expediteur_id == session.user_id %}message-moi{% else %}message-autre{% endif %}">
+            <div class="message-item {% if message.expediteur_id == session.user_id %}message-moi{% else %}message-autre{% endif %}" data-message-id="{{ message.id }}">
                 <span class="message-auteur">{{ message.prenom }} {{ message.nom }}</span>
                 <p class="message-contenu">{{ message.contenu }}</p>
                 <span class="message-date">{{ message.created_at }}</span>
@@ -16,8 +16,13 @@
     </div>
 
     <form class="message-form" method="POST" action="/messages/{{ conversation_id }}">
-        <textarea name="contenu" placeholder="Écrire un message..." required></textarea>
+        <textarea name="contenu" placeholder="Ecrire un message..." required></textarea>
         <button type="submit">Envoyer</button>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/messages.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 {% endblock %}

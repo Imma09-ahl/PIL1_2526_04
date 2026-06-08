@@ -19,7 +19,12 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>Aucune conversation pour le moment.</p>
+        <p class="empty-message">Aucune conversation pour le moment.</p>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/messages.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 {% endblock %}
