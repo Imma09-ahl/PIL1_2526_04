@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>IFRI MentorLink - Excellence Académique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1a237e",
+                        secondary: "#00c853",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        background: "#f9f9fb",
+                        surface: "#ffffff",
+                        "on-background": "#1a1c1d",
+                        "on-surface": "#1a1c1d",
+                        "outline-variant": "#e2e2e4",
+                        "surface-container-low": "#f3f3f5",
+                        "primary-container": "#e8eaf6",
+                        "on-primary-container": "#1a237e"
+                    },
+                    borderRadius: { DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px" },
+                    spacing: { sm: "12px", lg: "24px", md: "16px", xl: "32px" },
+                    fontFamily: {
+                        "body-md": ["Lora", "serif"],
+                        "headline-lg": ["Playfair Display", "serif"],
+                        "display-lg": ["Playfair Display", "serif"]
+                    },
+                    maxWidth: { "container-max": "1280px" }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .dark { background-color: #0a0f1e; color: #f9f9fb; }
+        .dark body { background-color: #0a0f1e; }
+        .dark .bg-background { background-color: #0a0f1e; }
+        .dark .bg-surface { background-color: #111827; }
+        .dark .bg-surface-container-low { background-color: #1f2937; }
+        .dark .text-on-background { color: #f9f9fb; }
+        .dark .text-on-surface { color: #f9f9fb; }
+        .dark .border-outline-variant { border-color: #374151; }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+            const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    themeToggleLightIcon.classList.remove('hidden');
+                    themeToggleDarkIcon.classList.add('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    themeToggleDarkIcon.classList.remove('hidden');
+                    themeToggleLightIcon.classList.add('hidden');
+                }
+            };
+
+            const savedTheme = localStorage.getItem('color-theme')
+                || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                localStorage.setItem('color-theme', newTheme);
+                applyTheme(newTheme);
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        });
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md transition-colors duration-300">
+
+<header class="w-full top-0 border-b border-outline-variant bg-surface dark:bg-[#0a0f1e] z-50 sticky transition-colors duration-200">
+    <div class="flex justify-between items-center px-lg py-md max-w-container-max mx-auto">
+        <a class="flex items-center gap-sm hover:opacity-80 transition-opacity" href="/">
+            <span class="material-symbols-outlined text-primary dark:text-secondary text-4xl">school</span>
+            <span class="font-headline-lg text-xl text-primary dark:text-secondary font-bold">IFRI MentorLink</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-xl">
+            <a class="text-on-surface-variant dark:text-gray-300 hover:text-primary dark:hover:text-secondary transition-colors" href="#apropos">À propos</a>
+            <a class="text-on-surface-variant dark:text-gray-300 hover:text-primary dark:hover:text-secondary transition-colors" href="#programmes">Programmes</a>
+            <a class="text-on-surface-variant dark:text-gray-300 hover:text-primary dark:hover:text-secondary transition-colors" href="#faq">FAQ</a>
+        </nav>
+        <div class="flex items-center gap-md">
+            {% if session.user_id %}
+                <span class="hidden sm:block text-sm text-on-surface-variant dark:text-gray-300">
+                    Bonjour, <span class="font-bold text-primary dark:text-secondary">{{ session.user_prenom }}</span>
+                </span>
+                <a class="font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-lg py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all" href="{{ url_for('auth.logout') }}">Déconnexion</a>
+            {% else %}
+                <a class="hidden sm:block font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-lg py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all" href="{{ url_for('auth.login') }}">Connexion</a>
+                <a class="font-bold bg-primary dark:bg-secondary text-on-primary rounded-full px-lg py-sm hover:opacity-90 transition-all" href="{{ url_for('auth.register') }}">S'inscrire</a>
+            {% endif %}
+            <button class="text-on-surface-variant dark:text-on-surface hover:bg-surface-container-low rounded-full p-2 transition-colors cursor-pointer" id="theme-toggle" type="button">
+                <span class="material-symbols-outlined" id="theme-toggle-dark-icon">dark_mode</span>
+                <span class="material-symbols-outlined hidden" id="theme-toggle-light-icon">light_mode</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="max-w-container-max mx-auto px-lg pt-lg space-y-sm" role="alert">
+            {% for category, message in messages %}
+                <div class="flex items-start gap-sm p-md rounded-lg text-sm
+                    {% if category == 'error' %}bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800
+                    {% else %}bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800{% endif %}">
+                    <span class="material-symbols-outlined text-base shrink-0">
+                        {% if category == 'error' %}error{% else %}check_circle{% endif %}
+                    </span>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<section class="max-w-container-max mx-auto px-lg py-xl md:py-24 flex flex-col md:flex-row items-center gap-xl fade-in" id="apropos">
+    <div class="flex-1 space-y-lg text-center md:text-left">
+        <h1 class="font-display-lg text-4xl md:text-6xl text-primary dark:text-secondary leading-tight">L'Excellence Académique par le Partage</h1>
+        <p class="font-body-md text-lg md:text-xl text-on-surface-variant dark:text-gray-300 max-w-2xl mx-auto md:mx-0">
+            Connectez-vous avec des mentors et mentorés de l'IFRI pour booster votre parcours en IA, Génie Logiciel, et plus encore.
+        </p>
+        <div class="pt-sm flex flex-col sm:flex-row gap-md justify-center md:justify-start">
+            {% if session.user_id %}
+                <span class="font-bold bg-secondary/20 text-secondary border border-secondary rounded-full px-xl py-md text-center">Vous êtes connecté(e)</span>
+                <a class="font-bold text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary px-base py-md hover:opacity-70 transition-all text-center" href="#programmes">Découvrir les mentors</a>
+            {% else %}
+                <a class="font-bold bg-secondary text-on-secondary rounded-full px-xl py-md hover:shadow-lg transition-all text-center" href="{{ url_for('auth.register') }}">Rejoindre la plateforme</a>
+                <a class="font-bold text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary px-base py-md hover:opacity-70 transition-all text-center" href="#programmes">Découvrir les mentors</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="flex-1 w-full">
+        <div class="rounded-2xl overflow-hidden shadow-2xl aspect-[4/5] md:aspect-[4/3] bg-surface-container-low relative">
+            <img alt="Étudiants de l'IFRI" class="w-full h-full object-cover object-top" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANJNAcItlhmVG4kQg1oJTnDlr60GU6saNIqd2KHd2_A_pcnJXMZzognPfXPvr4nsbXV6Z3a2kDELYq0CEm1z5esuzK4T-8hzudv2BO3yfESzG4kdXIyztSXy3jmiWRrIq71w312zr4HKKe-wj1XolAjHGf8mHrQjdF5ZoGcSlOzQV1ObBSGU0v-Mq6RKxtqPQ-NpMBwiWZ_ul06BvoJNRjwBP-60oGc09U7Q5BoG6JKL91QquHw-KKOGh-nrqBuzcLP_BuwBYcyPn0"/>
+        </div>
+    </div>
+</section>
+
+<section class="border-y border-outline-variant bg-surface-container-low dark:bg-[#111827]/50 py-lg fade-in">
+    <div class="max-w-container-max mx-auto px-lg grid grid-cols-2 md:grid-cols-4 gap-lg text-center">
+        <div class="space-y-xs">
+            <div class="text-3xl md:text-4xl font-display-lg text-primary dark:text-secondary">500+</div>
+            <div class="text-xs md:text-sm font-medium text-on-surface-variant uppercase tracking-wider">Sessions réalisées</div>
+        </div>
+        <div class="space-y-xs">
+            <div class="text-3xl md:text-4xl font-display-lg text-primary dark:text-secondary">98%</div>
+            <div class="text-xs md:text-sm font-medium text-on-surface-variant uppercase tracking-wider">Satisfaction</div>
+        </div>
+        <div class="space-y-xs">
+            <div class="text-3xl md:text-4xl font-display-lg text-primary dark:text-secondary">10 min</div>
+            <div class="text-xs md:text-sm font-medium text-on-surface-variant uppercase tracking-wider">Pour trouver un match</div>
+        </div>
+        <div class="space-y-xs">
+            <div class="text-3xl md:text-4xl font-display-lg text-primary dark:text-secondary">100%</div>
+            <div class="text-xs md:text-sm font-medium text-on-surface-variant uppercase tracking-wider">Gratuit</div>
+        </div>
+    </div>
+</section>
+
+<section class="py-xl md:py-24 bg-surface dark:bg-[#0a0f1e] fade-in" id="programmes">
+    <div class="max-w-container-max mx-auto px-lg text-center mb-xl">
+        <h2 class="font-display-lg text-3xl md:text-5xl text-primary dark:text-secondary mb-md">Comment ça marche ?</h2>
+        <p class="text-on-surface-variant dark:text-gray-400 max-w-xl mx-auto">Un accompagnement structuré pour votre réussite académique.</p>
+    </div>
+    <div class="max-w-container-max mx-auto px-lg grid grid-cols-1 md:grid-cols-3 gap-xl">
+        <div class="flex flex-col items-center text-center space-y-md p-lg rounded-xl bg-surface-container-low dark:bg-[#111827] border border-outline-variant">
+            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-secondary">
+                <span class="material-symbols-outlined text-4xl">how_to_reg</span>
+            </div>
+            <h3 class="font-headline-lg text-xl">Inscription</h3>
+            <p class="text-on-surface-variant text-sm">Créez votre profil détaillé en précisant vos compétences et vos besoins spécifiques.</p>
+        </div>
+        <div class="flex flex-col items-center text-center space-y-md p-lg rounded-xl bg-surface-container-low dark:bg-[#111827] border border-outline-variant">
+            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-secondary">
+                <span class="material-symbols-outlined text-4xl">psychology</span>
+            </div>
+            <h3 class="font-headline-lg text-xl">Matching IA</h3>
+            <p class="text-on-surface-variant text-sm">Notre algorithme intelligent vous propose les meilleurs profils basés sur votre filière.</p>
+        </div>
+        <div class="flex flex-col items-center text-center space-y-md p-lg rounded-xl bg-surface-container-low dark:bg-[#111827] border border-outline-variant">
+            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-secondary">
+                <span class="material-symbols-outlined text-4xl">forum</span>
+            </div>
+            <h3 class="font-headline-lg text-xl">Échange &amp; Progrès</h3>
+            <p class="text-on-surface-variant text-sm">Échangez via la messagerie, planifiez vos sessions et suivez votre progression.</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-xl md:py-24 bg-surface-container-low dark:bg-[#111827] fade-in">
+    <div class="max-w-container-max mx-auto px-lg">
+        <h2 class="font-display-lg text-3xl md:text-5xl text-center text-primary dark:text-secondary mb-xl">Qui peut utiliser MentorLink ?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="bg-blue-50 dark:bg-primary/10 p-xl rounded-2xl border border-primary/10 flex flex-col items-start space-y-md">
+                <span class="text-5xl">🎓</span>
+                <h3 class="font-headline-lg text-2xl text-primary dark:text-secondary">Tu maîtrises une matière ?</h3>
+                <p class="text-on-surface-variant dark:text-gray-300">Partage tes connaissances avec tes camarades de l'IFRI. Deviens mentor et aide les autres à progresser.</p>
+                <a class="mt-auto font-bold text-primary dark:text-secondary hover:underline flex items-center gap-xs" href="{{ url_for('auth.register') }}">Devenir mentor →</a>
+            </div>
+            <div class="bg-green-50 dark:bg-secondary/10 p-xl rounded-2xl border border-secondary/10 flex flex-col items-start space-y-md">
+                <span class="text-5xl">📚</span>
+                <h3 class="font-headline-lg text-2xl text-secondary">Tu as besoin d'aide ?</h3>
+                <p class="text-on-surface-variant dark:text-gray-300">Trouve le mentor idéal parmi les étudiants de l'IFRI qui maîtrisent les matières où tu as des lacunes.</p>
+                <a class="mt-auto font-bold text-secondary hover:underline flex items-center gap-xs" href="{{ url_for('auth.register') }}">Trouver un mentor →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-xl md:py-24 bg-surface dark:bg-[#0a0f1e] fade-in">
+    <div class="max-w-container-max mx-auto px-lg">
+        <h2 class="font-display-lg text-3xl md:text-5xl text-center text-primary dark:text-secondary mb-xl">Nos Filières d'Excellence</h2>
+        <div class="flex flex-wrap justify-center gap-md">
+            <div class="bg-surface-container-low dark:bg-[#111827] rounded-full px-lg py-sm shadow-sm border border-outline-variant flex items-center gap-sm"><span class="text-2xl">🤖</span><span class="font-bold text-on-surface">Intelligence Artificielle (IA)</span></div>
+            <div class="bg-surface-container-low dark:bg-[#111827] rounded-full px-lg py-sm shadow-sm border border-outline-variant flex items-center gap-sm"><span class="text-2xl">🖥️</span><span class="font-bold text-on-surface">Informatique et Multimédia (IM)</span></div>
+            <div class="bg-surface-container-low dark:bg-[#111827] rounded-full px-lg py-sm shadow-sm border border-outline-variant flex items-center gap-sm"><span class="text-2xl">⚙️</span><span class="font-bold text-on-surface">Génie Logiciel (GL)</span></div>
+            <div class="bg-surface-container-low dark:bg-[#111827] rounded-full px-lg py-sm shadow-sm border border-outline-variant flex items-center gap-sm"><span class="text-2xl">📡</span><span class="font-bold text-on-surface">Systèmes Embarqués &amp; IoT (SE&amp;IoT)</span></div>
+            <div class="bg-surface-container-low dark:bg-[#111827] rounded-full px-lg py-sm shadow-sm border border-outline-variant flex items-center gap-sm"><span class="text-2xl">🔒</span><span class="font-bold text-on-surface">Sécurité Informatique (SI)</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="py-xl md:py-24 bg-surface-container-low dark:bg-[#111827] fade-in">
+    <div class="max-w-container-max mx-auto px-lg">
+        <h2 class="font-display-lg text-3xl md:text-5xl text-center text-primary dark:text-secondary mb-xl">Une vraie session de mentorat</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="bg-surface dark:bg-[#0a0f1e] p-xl rounded-2xl border border-outline-variant space-y-lg shadow-sm">
+                <div class="flex items-center gap-md">
+                    <span class="text-4xl">😓</span>
+                    <h3 class="font-headline-lg text-xl opacity-70">Avant MentorLink</h3>
+                </div>
+                <ul class="space-y-md text-on-surface-variant text-sm">
+                    <li class="flex items-start gap-sm"><span class="text-red-500 font-bold">✕</span> Bloqué sur les Algorithmes depuis 3 semaines</li>
+                    <li class="flex items-start gap-sm"><span class="text-red-500 font-bold">✕</span> Pas de prof disponible en dehors des cours</li>
+                    <li class="flex items-start gap-sm"><span class="text-red-500 font-bold">✕</span> Résultats en baisse</li>
+                    <li class="flex items-start gap-sm"><span class="text-red-500 font-bold">✕</span> Manque de motivation</li>
+                </ul>
+            </div>
+            <div class="bg-surface dark:bg-[#0a0f1e] p-xl rounded-2xl border-2 border-secondary space-y-lg shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-secondary text-on-secondary px-lg py-xs text-xs font-bold rounded-bl-xl">SUCCÈS</div>
+                <div class="flex items-center gap-md">
+                    <span class="text-4xl">😊</span>
+                    <h3 class="font-headline-lg text-xl text-secondary">Après MentorLink</h3>
+                </div>
+                <ul class="space-y-md text-sm">
+                    <li class="flex items-start gap-sm"><span class="text-secondary font-bold">✓</span><span class="font-medium">Match trouvé en 10 minutes</span></li>
+                    <li class="flex items-start gap-sm"><span class="text-secondary font-bold">✓</span><span class="font-medium">3 sessions avec un mentor en GL-L3</span></li>
+                    <li class="flex items-start gap-sm"><span class="text-secondary font-bold">✓</span><span class="font-medium">Note passée de 08 à 15/20</span></li>
+                    <li class="flex items-start gap-sm"><span class="text-secondary font-bold">✓</span><span class="font-medium">Confiance retrouvée</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-xl bg-surface-container-low dark:bg-[#111827] opacity-80 fade-in">
+    <div class="max-w-container-max mx-auto px-lg">
+        <p class="text-center text-xs font-bold uppercase tracking-widest mb-lg text-on-surface-variant">Nos Partenaires Académiques &amp; Institutionnels</p>
+        <div class="flex flex-wrap justify-center items-center gap-xl md:gap-16 font-display-lg text-2xl md:text-3xl text-on-surface/50 dark:text-white/50">
+            <span>UAC</span><span class="hidden md:inline text-outline-variant">|</span>
+            <span>IFRI</span><span class="hidden md:inline text-outline-variant">|</span>
+            <span>ADN</span><span class="hidden md:inline text-outline-variant">|</span>
+            <span>Sème City</span>
+        </div>
+    </div>
+</section>
+
+<section class="py-xl md:py-24 bg-surface dark:bg-[#0a0f1e] fade-in" id="faq">
+    <div class="max-w-3xl mx-auto px-lg">
+        <h2 class="font-display-lg text-3xl text-center text-primary dark:text-secondary mb-xl">Questions Fréquemment Posées</h2>
+        <div class="space-y-md">
+            <details class="group bg-surface-container-low dark:bg-[#111827] rounded-xl border border-outline-variant">
+                <summary class="flex justify-between items-center p-lg cursor-pointer font-bold">
+                    Comment devenir mentor ?
+                    <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                </summary>
+                <div class="px-lg pb-lg text-on-surface-variant text-sm">
+                    Inscrivez-vous sur la plateforme et complétez votre profil avec vos compétences. Vous pourrez ensuite proposer du mentorat via votre tableau de bord.
+                </div>
+            </details>
+            <details class="group bg-surface-container-low dark:bg-[#111827] rounded-xl border border-outline-variant">
+                <summary class="flex justify-between items-center p-lg cursor-pointer font-bold">
+                    Le mentorat est-il payant ?
+                    <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                </summary>
+                <div class="px-lg pb-lg text-on-surface-variant text-sm">
+                    Non, MentorLink est une plateforme d'entraide communautaire gratuite pour tous les étudiants inscrits à l'IFRI.
+                </div>
+            </details>
+            <details class="group bg-surface-container-low dark:bg-[#111827] rounded-xl border border-outline-variant">
+                <summary class="flex justify-between items-center p-lg cursor-pointer font-bold">
+                    Comment fonctionne le matching ?
+                    <span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                </summary>
+                <div class="px-lg pb-lg text-on-surface-variant text-sm">
+                    L'algorithme analyse vos matières fortes/faibles, votre emploi du temps et vos objectifs pour vous proposer les profils les plus compatibles.
+                </div>
+            </details>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="w-full py-xl border-t border-outline-variant bg-surface dark:bg-[#0a0f1e]">
+    <div class="px-lg max-w-container-max mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-xl mb-xl">
+            <div class="space-y-md">
+                <a class="flex items-center gap-sm" href="/">
+                    <span class="material-symbols-outlined text-primary dark:text-secondary text-3xl">school</span>
+                    <span class="font-headline-lg text-lg text-primary dark:text-secondary font-bold">IFRI MentorLink</span>
+                </a>
+                <p class="text-sm text-on-surface-variant dark:text-gray-400 max-w-xs">
+                    La plateforme officielle de mentorat de l'IFRI, favorisant l'excellence académique par l'entraide étudiante.
+                </p>
+            </div>
+            <div>
+                <h4 class="font-bold text-primary dark:text-secondary mb-lg uppercase tracking-wider text-sm">Navigation</h4>
+                <ul class="space-y-sm text-sm">
+                    <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="/">Accueil</a></li>
+                    {% if session.user_id %}
+                        <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="{{ url_for('auth.logout') }}">Déconnexion</a></li>
+                    {% else %}
+                        <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="{{ url_for('auth.register') }}">S'inscrire</a></li>
+                        <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="{{ url_for('auth.login') }}">Connexion</a></li>
+                    {% endif %}
+                    <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-primary dark:text-secondary mb-lg uppercase tracking-wider text-sm">Contact</h4>
+                <ul class="space-y-sm text-sm text-on-surface-variant dark:text-gray-400">
+                    <li class="flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-primary dark:text-secondary" style="font-size:20px">mail</span>
+                        <a class="hover:underline" href="mailto:contact@ifri-uac.bj">contact@ifri-uac.bj</a>
+                    </li>
+                    <li class="flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-primary dark:text-secondary" style="font-size:20px">location_on</span>
+                        Campus d'Abomey-Calavi, Bénin
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-outline-variant pt-lg flex flex-col md:flex-row justify-between items-center gap-md text-xs text-on-surface-variant dark:text-gray-500">
+            <span>© 2026 IFRI_MentorLink | Projet PIL1 2025-2026 — IFRI, Université d'Abomey-Calavi</span>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
