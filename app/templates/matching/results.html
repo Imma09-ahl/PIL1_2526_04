@@ -1,6 +1,127 @@
 {% extends "base.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Résultats de matching — IFRI MentorLink{% endblock %}
 
 {% block content %}
+<section class="matching-page">
+    <header class="matching-header fade-in">
+        <div class="matching-header__text">
+            <p class="matching-eyebrow">Matching intelligent</p>
+            <h1 class="matching-title">Vos mentors recommandés</h1>
+            <p class="matching-subtitle">
+                Combinaisons basées sur vos lacunes, vos disponibilités et la proximité académique.
+            </p>
+        </div>
+        <div class="matching-header__actions">
+            <label class="matching-filter" for="score-filter">
+                Score minimum
+                <select id="score-filter" class="matching-select">
+                    <option value="0">Tous</option>
+                    <option value="30">≥ 30 %</option>
+                    <option value="50">≥ 50 %</option>
+                    <option value="70">≥ 70 %</option>
+                </select>
+            </label>
+            <button type="button" id="sort-score-btn" class="matching-btn matching-btn--outline">
+                Trier par score
+            </button>
+        </div>
+    </header>
+
+    {% if resultats %}
+    <div id="matching-results" class="matching-grid">
+        {% for match in resultats %}
+        <article
+            class="matching-card fade-in"
+            data-score="{{ match.score }}"
+        >
+            <div class="matching-card__top">
+                <div class="matching-card__profile">
+                    {% if match.photo %}
+                    <img
+                        class="matching-card__avatar"
+                        src="{{ match.photo }}"
+                        alt="Photo de {{ match.prenom }} {{ match.nom }}"
+                    />
+                    {% else %}
+                    <div class="matching-card__avatar matching-card__avatar--placeholder">
+                        <span>{{ match.prenom[0] }}{{ match.nom[0] }}</span>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h2 class="matching-card__name">
+                            {{ match.prenom }} {{ match.nom }}
+                        </h2>
+                        <p class="matching-card__meta">
+                            {% if match.filiere %}{{ match.filiere }}{% endif %}
+                            {% if match.niveau %} · {{ match.niveau }}{% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="matching-score"
+                    data-level="{% if match.score >= 70 %}high{% elif match.score >= 40 %}medium{% else %}low{% endif %}"
+                >
+                    <span class="matching-score__value">{{ match.score }}%</span>
+                    <span class="matching-score__label">Compatibilité</span>
+                </div>
+            </div>
+
+            <div class="matching-card__section">
+                <h3 class="matching-card__section-title">Matières en commun</h3>
+                {% if match.matieres_communes %}
+                <ul class="matching-tags">
+                    {% for matiere in match.matieres_communes %}
+                    <li class="matching-tag matching-tag--primary">{{ matiere }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="matching-empty">Aucune matière commune identifiée.</p>
+                {% endif %}
+            </div>
+
+            <div class="matching-card__section">
+                <h3 class="matching-card__section-title">Disponibilités communes</h3>
+                {% if match.disponibilites_communes %}
+                <ul class="matching-tags">
+                    {% for creneau in match.disponibilites_communes %}
+                    <li class="matching-tag matching-tag--secondary">{{ creneau }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="matching-empty">Aucun créneau commun pour le moment.</p>
+                {% endif %}
+            </div>
+
+            {% if match.bio %}
+            <p class="matching-card__bio">{{ match.bio }}</p>
+            {% endif %}
+
+            <div class="matching-card__footer">
+                <span class="matching-card__hint">Profil mentor compatible</span>
+                <a href="/messages?user_id={{ match.utilisateur_id }}" class="matching-btn matching-btn--primary">
+                    Contacter
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="matching-empty-state fade-in">
+        <h2>Aucun match pour l'instant</h2>
+        <p>
+            Complétez vos lacunes et disponibilités dans votre profil,
+            ou élargissez vos matières pour obtenir des recommandations.
+        </p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.MATCHING_USER_ID = {{ user_id }};
+</script>
+<script src="{{ url_for('static', filename='js/matching.js') }}"></script>
 {% endblock %}
