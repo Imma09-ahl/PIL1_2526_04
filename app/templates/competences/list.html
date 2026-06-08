@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>IFRI MentorLink — Mes matières</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="{{ url_for('static', filename='js/competences-tailwind.js') }}"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/competences.css') }}">
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md transition-colors duration-300">
+
+<!-- En-tête (maquette — liens statiques) -->
+<header class="w-full border-b border-outline-variant bg-surface dark:bg-[#0a0f1e] sticky top-0 z-50">
+    <div class="flex justify-between items-center px-6 py-4 max-w-container-max mx-auto">
+        <a href="/" class="font-display-lg text-xl text-primary dark:text-secondary font-bold">IFRI MentorLink</a>
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+            <a href="/competences" class="text-primary dark:text-secondary font-bold">Compétences</a>
+            <a href="/matching" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary">Matching</a>
+            <a href="/dashboard" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary">Tableau de bord</a>
+        </nav>
+        <button type="button" id="theme-toggle" class="rounded-full p-2 hover:bg-surface-container-low transition-colors" aria-label="Changer le thème">
+            <span class="material-symbols-outlined" id="theme-toggle-dark-icon">dark_mode</span>
+            <span class="material-symbols-outlined hidden" id="theme-toggle-light-icon">light_mode</span>
+        </button>
+    </div>
+</header>
+
+<main class="flex-grow max-w-container-max mx-auto w-full px-6 py-10 space-y-10">
+
+    <!-- Titre -->
+    <div>
+        <h1 class="font-display-lg text-3xl md:text-4xl text-primary dark:text-secondary mb-2">Mes matières & disponibilités</h1>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl">
+            Indiquez les matières où vous êtes à l'aise ou où vous avez besoin d'aide, vos créneaux horaires
+            et le format de séance souhaité. Toutes les matières sont saisies librement par vous.
+        </p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="space-y-2">
+        {% for category, message in messages %}
+        <p class="text-sm px-4 py-3 rounded-lg border
+            {% if category == 'error' %}bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800
+            {% else %}bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800{% endif %}">
+            {{ message }}
+        </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Ajouter une matière -->
+    <section class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-6 shadow-sm">
+        <h2 class="font-headline-lg text-xl text-primary dark:text-secondary mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined">add_circle</span>
+            Ajouter une matière
+        </h2>
+        <form class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end" action="{{ url_for('competences.ajouter') }}" method="post">
+            <div class="md:col-span-5">
+                <label for="matiere" class="block text-sm font-medium mb-1">Nom de la matière</label>
+                <input type="text" id="matiere" name="matiere" placeholder="Ex. Python"
+                       class="w-full rounded-lg border-outline-variant dark:bg-[#1f2937] dark:border-gray-600 focus:ring-primary focus:border-primary"/>
+                <p class="text-xs text-gray-500 mt-1">Une matière à la fois — ajoutez Python, Java, SQL, Réseaux… séparément.</p>
+            </div>
+            <div class="md:col-span-4">
+                <span class="block text-sm font-medium mb-2">Type</span>
+                <div class="flex flex-wrap gap-4">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="type" value="fort" class="text-secondary focus:ring-secondary" checked/>
+                        <span>Matière forte</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="type" value="faible" class="text-secondary focus:ring-secondary"/>
+                        <span>Matière faible</span>
+                    </label>
+                </div>
+            </div>
+            <div class="md:col-span-3">
+                <button type="submit"
+                        class="w-full font-bold bg-secondary text-on-secondary rounded-full px-6 py-2.5 hover:opacity-90 transition-opacity">
+                    Ajouter
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Filtres -->
+    <form method="get" action="{{ url_for('competences.index') }}" class="flex flex-col sm:flex-row flex-wrap gap-3">
+        <div class="flex-1 min-w-[200px] relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+            <input type="search" name="q" value="{{ filtre_q }}" placeholder="Rechercher une matière…"
+                   class="w-full pl-10 rounded-full border-outline-variant dark:bg-[#111827] dark:border-gray-600 py-2.5"/>
+        </div>
+        <select name="type" class="rounded-full border-outline-variant dark:bg-[#111827] dark:border-gray-600 px-4 py-2.5 min-w-[140px]"
+                onchange="this.form.submit()">
+            <option value="" {% if not filtre_type %}selected{% endif %}>Tous les types</option>
+            <option value="fort" {% if filtre_type == 'fort' %}selected{% endif %}>Matières fortes</option>
+            <option value="faible" {% if filtre_type == 'faible' %}selected{% endif %}>Matières faibles</option>
+        </select>
+        <button type="submit" class="rounded-full bg-primary text-on-primary px-5 py-2.5 text-sm font-medium hover:opacity-90">
+            Filtrer
+        </button>
+    </form>
+
+    <!-- Listes matières fortes / faibles -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Fortes -->
+        <section class="bg-green-50 dark:bg-secondary/10 border border-secondary/20 rounded-xl p-6">
+            <h2 class="font-headline-lg text-xl text-secondary mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined">school</span>
+                Matières fortes
+            </h2>
+            <ul class="space-y-3">
+                {% for c in fortes %}
+                <li class="flex items-center justify-between bg-surface dark:bg-[#111827] rounded-lg px-4 py-3 border border-outline-variant">
+                    <span class="font-medium">{{ c.matiere }}</span>
+                    <form action="{{ url_for('competences.supprimer') }}" method="post" class="inline">
+                        <input type="hidden" name="competence_id" value="{{ c.id }}"/>
+                        <button type="submit" class="text-red-600 hover:text-red-700 p-1 rounded" title="Supprimer">
+                            <span class="material-symbols-outlined text-xl">delete</span>
+                        </button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="text-sm text-gray-500 dark:text-gray-400 italic">Aucune matière forte pour le moment.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Faibles -->
+        <section class="bg-blue-50 dark:bg-primary/10 border border-primary/20 rounded-xl p-6">
+            <h2 class="font-headline-lg text-xl text-primary dark:text-secondary mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined">menu_book</span>
+                Matières faibles
+            </h2>
+            <ul class="space-y-3">
+                {% for c in faibles %}
+                <li class="flex items-center justify-between bg-surface dark:bg-[#111827] rounded-lg px-4 py-3 border border-outline-variant">
+                    <span class="font-medium">{{ c.matiere }}</span>
+                    <form action="{{ url_for('competences.supprimer') }}" method="post" class="inline">
+                        <input type="hidden" name="competence_id" value="{{ c.id }}"/>
+                        <button type="submit" class="text-red-600 hover:text-red-700 p-1 rounded" title="Supprimer">
+                            <span class="material-symbols-outlined text-xl">delete</span>
+                        </button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="text-sm text-gray-500 dark:text-gray-400 italic">Aucune matière faible pour le moment.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+
+    <!-- Disponibilités horaires -->
+    <section class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-6 shadow-sm">
+        <h2 class="font-headline-lg text-xl text-primary dark:text-secondary mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined">schedule</span>
+            Mes disponibilités
+        </h2>
+        <form class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end mb-6"
+              action="{{ url_for('competences.ajouter_disponibilite') }}" method="post">
+            <div>
+                <label for="jour" class="block text-sm font-medium mb-1">Jour</label>
+                <select id="jour" name="jour" class="w-full rounded-lg dark:bg-[#1f2937] dark:border-gray-600">
+                    {% for jour in jours %}
+                    <option value="{{ jour }}">{{ jour }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="heure_debut" class="block text-sm font-medium mb-1">Heure début</label>
+                <input type="time" id="heure_debut" name="heure_debut" value="14:00" class="w-full rounded-lg dark:bg-[#1f2937] dark:border-gray-600"/>
+            </div>
+            <div>
+                <label for="heure_fin" class="block text-sm font-medium mb-1">Heure fin</label>
+                <input type="time" id="heure_fin" name="heure_fin" value="16:00" class="w-full rounded-lg dark:bg-[#1f2937] dark:border-gray-600"/>
+            </div>
+            <div class="lg:col-span-2">
+                <button type="submit" class="w-full font-bold border-2 border-primary dark:border-secondary text-primary dark:text-secondary rounded-full px-6 py-2.5 hover:bg-primary-container dark:hover:bg-primary/20 transition-colors">
+                    Ajouter un créneau
+                </button>
+            </div>
+        </form>
+        <ul class="space-y-2">
+            {% for d in disponibilites %}
+            <li class="flex items-center justify-between bg-surface-container-low dark:bg-[#1f2937] rounded-lg px-4 py-3">
+                <span><span class="font-medium">{{ d.jour }}</span> — {{ d.heure_debut_fmt }} à {{ d.heure_fin_fmt }}</span>
+                <form action="{{ url_for('competences.supprimer_disponibilite') }}" method="post" class="inline">
+                    <input type="hidden" name="disponibilite_id" value="{{ d.id }}"/>
+                    <button type="submit" class="text-red-600 hover:text-red-700" title="Supprimer">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </form>
+            </li>
+            {% else %}
+            <li class="text-sm text-gray-500 dark:text-gray-400 italic">Aucun créneau enregistré.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <!-- Format de séance -->
+    <section class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-6 shadow-sm">
+        <h2 class="font-headline-lg text-xl text-primary dark:text-secondary mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined">videocam</span>
+            Format des séances
+        </h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Précisez comment vous préférez organiser vos sessions de mentorat.</p>
+        <div class="flex flex-wrap gap-4">
+            <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
+                <input type="radio" name="format" value="presentiel" class="text-secondary focus:ring-secondary"/>
+                <span>
+                    <span class="font-medium block">Présentiel</span>
+                    <span class="text-xs text-gray-500">Sur le campus IFRI</span>
+                </span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
+                <input type="radio" name="format" value="en_ligne" class="text-secondary focus:ring-secondary"/>
+                <span>
+                    <span class="font-medium block">En ligne</span>
+                    <span class="text-xs text-gray-500">Visio, messagerie</span>
+                </span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
+                <input type="radio" name="format" value="les_deux" class="text-secondary focus:ring-secondary" checked/>
+                <span>
+                    <span class="font-medium block">Les deux</span>
+                    <span class="text-xs text-gray-500">Présentiel ou en ligne</span>
+                </span>
+            </label>
+        </div>
+        <p class="text-xs text-gray-500 mt-4">Note : l'enregistrement du format en base nécessitera une évolution du schéma SQL (non modifié dans ce module).</p>
+    </section>
+
+</main>
+
+<footer class="border-t border-outline-variant py-6 mt-8 text-center text-xs text-gray-500">
+    IFRI MentorLink — Module Compétences
+</footer>
+
+<script src="{{ url_for('static', filename='js/competences.js') }}"></script>
+</body>
+</html>

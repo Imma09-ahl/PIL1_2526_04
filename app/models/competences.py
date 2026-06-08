@@ -27,3 +27,13 @@ def delete_competence(competence_id):
     cursor.execute("DELETE FROM competence WHERE id = %s", (competence_id,))
     conn.commit()
     conn.close()
+
+def delete_competence_utilisateur(competence_id, utilisateur_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        DELETE FROM competence
+        WHERE id = %s AND utilisateur_id = %s
+    """, (competence_id, utilisateur_id))
+    conn.commit()
+    conn.close()
