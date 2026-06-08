@@ -7,21 +7,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/mentoring.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/competences.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/matching.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/messages.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
 <body>
     <nav>
-        <a href="/">IFRI MentorLink</a>
-        <a href="/mentoring">Mentorat</a>
-        <a href="/matching">Matching</a>
-        <a href="/dashboard">Tableau de bord</a>
-        <a href="/messages">Messages</a>
-        <a href="/profile">Profil</a>
-        <a href="/logout">Déconnexion</a>
-    </nav>
+    <a href="/">IFRI MentorLink</a>
+    <a href="/competences">Compétences</a>
+    <a href="/matching">Matching</a>
+    <a href="/dashboard">Tableau de bord</a>
+    <a href="/messages">Messages</a>
+    <a href="/profile">Profil</a>
+    <a href="/logout">Déconnexion</a>
+    <button id="theme-toggle">🌙</button>
+</nav>
 
     <main>
         {% block content %}
