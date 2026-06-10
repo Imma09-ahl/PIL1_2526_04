@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport de projet — IFRI MentorLink</title>
+    <style>
+        :root { --primary: #1a237e; --secondary: #00c853; --bg: #f9f9fb; --text: #1a1c1d; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        header { background: var(--primary); color: #fff; padding: 2.5rem 2rem; text-align: center; }
+        header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        header p { opacity: 0.9; }
+        main { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+        section { background: #fff; border-radius: 12px; padding: 1.8rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        h2 { color: var(--primary); border-bottom: 3px solid var(--secondary); padding-bottom: 0.4rem; margin-bottom: 1rem; font-size: 1.4rem; }
+        h3 { color: var(--primary); margin: 1.2rem 0 0.6rem; font-size: 1.1rem; }
+        ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.3rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+        th, td { border: 1px solid #e2e2e4; padding: 0.6rem 0.8rem; text-align: left; }
+        th { background: var(--primary); color: #fff; }
+        tr:nth-child(even) { background: #f3f3f5; }
+        code, pre { background: #f3f3f5; padding: 0.15rem 0.4rem; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.9rem; }
+        pre { padding: 1rem; overflow-x: auto; margin: 0.8rem 0; }
+        .badge { display: inline-block; background: var(--secondary); color: #fff; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        footer { text-align: center; padding: 1.5rem; color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <p class="badge">PIL1 2025-2026 — Groupe 04</p>
+    <h1>IFRI MentorLink</h1>
+    <p>Plateforme de mentorat académique — IFRI, Université d'Abomey-Calavi</p>
+</header>
+
+<main>
+
+<section id="equipe">
+    <h2>1. Équipe et membres</h2>
+    <p><strong>Groupe :</strong> PIL1_2526_04 — Groupe 4</p>
+    <table>
+        <thead><tr><th>#</th><th>Nom</th><th>Filière</th><th>Branche Git</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>AHOLOU Houéfa Immaculée Christelle</td><td>IA</td><td>feature/profil</td></tr>
+            <tr><td>2</td><td>AGBOTON ATCHOU Tounded Jordy Kristy</td><td>GL</td><td>feature/auth</td></tr>
+            <tr><td>3</td><td>AKPO Sara Franckelle Jéhoforte</td><td>SI</td><td>feature/messagerie</td></tr>
+            <tr><td>4</td><td>ATINKPAHOUN Mendel Hardy Mahugnon</td><td>SE&IoT</td><td>feature/competences</td></tr>
+            <tr><td>5</td><td>KARAMBA Rafiou</td><td>SI</td><td>feature/competences</td></tr>
+            <tr><td>6</td><td>LEGUEDE Aristide</td><td>IM</td><td>feature/matching</td></tr>
+            <tr><td>7</td><td>OLUFADE AYILARA Alayi Barakaath Omowumi</td><td>GL</td><td>feature/messagerie</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<section id="organisation">
+    <h2>2. Mode de fonctionnement interne</h2>
+    <p>Notre équipe est composée de <strong>7 membres</strong>, chacun ayant travaillé sur une fonctionnalité précise du projet sur sa propre branche Git afin d'éviter les interférences.</p>
+    <p>Nous avons organisé des <strong>réunions régulières</strong> et des séances de travail via <strong>Google Meet</strong> pour suivre l'avancement, résoudre les difficultés et maintenir la cohérence globale du développement.</p>
+    <p>Nous avons rencontré des difficultés liées à la <strong>gestion des branches Git</strong>, mais grâce à la collaboration et à la communication, nous avons pu les résoudre et poursuivre le développement.</p>
+    <h3>Outils utilisés</h3>
+    <ul>
+        <li>Git / GitHub — versionnement et collaboration</li>
+        <li>Google Meet — réunions d'équipe</li>
+        <li>Python / Flask — backend</li>
+        <li>MySQL — base de données</li>
+        <li>HTML, CSS, JavaScript, Tailwind CSS — frontend</li>
+    </ul>
+</section>
+
+<section id="demarche">
+    <h2>3. Démarche suivie</h2>
+    <ol>
+        <li>Analyse du cahier des charges et répartition des modules</li>
+        <li>Conception de la base de données (modèle relationnel)</li>
+        <li>Développement parallèle sur 5 branches feature</li>
+        <li>Harmonisation visuelle (couleurs, polices, composants Tailwind)</li>
+        <li>Intégration de l'authentification par session Flask sur tous les modules</li>
+        <li>Tests manuels module par module</li>
+        <li>Préparation de la fusion sur <code>main</code></li>
+    </ol>
+</section>
+
+<section id="conception">
+    <h2>4. Conception du projet</h2>
+    <h3>Architecture client-serveur</h3>
+    <p>L'application suit une architecture <strong>modulaire</strong> en couches :</p>
+    <ul>
+        <li><strong>Présentation</strong> : templates Jinja2 + CSS/JS</li>
+        <li><strong>Routes</strong> : Blueprints Flask (auth, profil, compétences, matching, messages)</li>
+        <li><strong>Services</strong> : logique métier (auth_service, matching_service)</li>
+        <li><strong>Modèles</strong> : accès SQL (user, competences, message, matching)</li>
+        <li><strong>Données</strong> : MySQL</li>
+    </ul>
+    <h3>Structure du dépôt</h3>
+    <pre>app/
+  routes/       → endpoints HTTP
+  models/       → requêtes SQL
+  services/     → logique métier
+  templates/    → pages HTML
+  static/       → CSS, JS, images
+database/
+  schema.sql    → structure BDD
+rapport/
+  index.html    → ce document</pre>
+</section>
+
+<section id="bdd">
+    <h2>5. Base de données</h2>
+    <p>SGBD : <strong>MySQL</strong>. Fichier : <code>database/schema.sql</code></p>
+    <table>
+        <thead><tr><th>Table</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td>utilisateur</td><td>Comptes, profils (nom, email, filière, bio, format mentorat…)</td></tr>
+            <tr><td>competence</td><td>Matières fortes (fort) et lacunes (faible)</td></tr>
+            <tr><td>disponibilite</td><td>Créneaux horaires par jour</td></tr>
+            <tr><td>matching</td><td>Résultats mentor/mentoré avec score</td></tr>
+            <tr><td>conversation</td><td>Paires d'utilisateurs en discussion</td></tr>
+            <tr><td>message</td><td>Messages textuels avec horodatage</td></tr>
+        </tbody>
+    </table>
+    <h3>Algorithme de matching</h3>
+    <ul>
+        <li>50 % — compatibilité compétences (forts mentor ∩ lacunes mentoré)</li>
+        <li>30 % — créneaux horaires communs</li>
+        <li>20 % — proximité filière et niveau</li>
+    </ul>
+</section>
+
+<section id="deploiement">
+    <h2>6. Instructions de déploiement</h2>
+    <pre># 1. Cloner le dépôt
+git clone &lt;url&gt; &amp;&amp; cd PIL1_2526_04
+
+# 2. Environnement Python
+python -m venv venv
+venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+
+# 3. Base de données
+mysql -u root -p &lt; database/schema.sql
+
+# 4. Variables d'environnement (optionnel)
+set SECRET_KEY=votre_cle_secrete
+set MYSQL_PASSWORD=votre_mdp
+
+# 5. Lancer
+python run.py</pre>
+    <p>Accès : <strong>http://localhost:5000</strong></p>
+</section>
+
+<section id="manuel">
+    <h2>7. Manuel d'utilisation</h2>
+    <h3>Inscription et connexion</h3>
+    <ol>
+        <li>Accéder à la page d'accueil et cliquer sur <strong>S'inscrire</strong></li>
+        <li>Renseigner nom, prénom, e-mail, téléphone et mot de passe</li>
+        <li>Se connecter → redirection vers le <strong>tableau de bord</strong></li>
+    </ol>
+    <h3>Compléter son profil</h3>
+    <ol>
+        <li>Menu <strong>Profil</strong> → <strong>Modifier</strong></li>
+        <li>Renseigner filière, niveau, bio, photo</li>
+        <li>Ajouter matières maîtrisées et matières où vous avez besoin d'aide</li>
+        <li>Définir vos disponibilités horaires</li>
+    </ol>
+    <h3>Compétences et disponibilités</h3>
+    <p>Page <strong>Compétences</strong> : ajouter/supprimer matières, créneaux et format de séance (présentiel, en ligne, les deux).</p>
+    <h3>Matching</h3>
+    <p>Page <strong>Matching</strong> : consulter les mentors recommandés avec score, matières communes et créneaux compatibles. Cliquer sur <strong>Contacter</strong> pour ouvrir une conversation.</p>
+    <h3>Messagerie</h3>
+    <p>Page <strong>Messages</strong> : liste des conversations, envoi de messages textuels, réception en temps réel (rafraîchissement automatique).</p>
+</section>
+
+</main>
+
+<footer>
+    © 2026 IFRI MentorLink — Groupe 4 — IFRI, Université d'Abomey-Calavi — PIL1 2025-2026
+</footer>
+
+</body>
+</html>
