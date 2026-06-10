@@ -104,7 +104,9 @@ mysql -u root -p < database/schema.sql
 python run.py
 ```
 
-Application accessible sur : **http://localhost:5000**
+Application accessible sur : http://127.0.0.1:5000/
+
+
 
 ## Utilisation
 
@@ -148,7 +150,7 @@ git merge feature/messagerie
 ## Équipe — Groupe 4
 
 1. AHOLOU Houéfa Immaculée Christelle (IA)
-2. AGBOTON ATCHOU Tounded Jordy Kristy (GL)
+2. AGBOTON ATCHOU Tounde Jordy Kristy (GL)
 3. AKPO Sara Franckelle Jéhoforte (SI)
 4. ATINKPAHOUN Mendel Hardy Mahugnon (SE&IoT)
 5. KARAMBA Rafiou (SI)
