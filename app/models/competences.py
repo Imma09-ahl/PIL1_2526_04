@@ -1,29 +1,53 @@
 from .user import get_db
 
-def add_competence(utilisateur_id, matiere, type):
+
+def add_competence(utilisateur_id, matiere, type_comp):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO competence (utilisateur_id, matiere, type)
         VALUES (%s, %s, %s)
-    """, (utilisateur_id, matiere, type))
+        """,
+        (utilisateur_id, matiere, type_comp),
+    )
     conn.commit()
     conn.close()
+
 
 def get_competences(utilisateur_id):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT * FROM competence 
+    cursor.execute(
+        """
+        SELECT * FROM competence
         WHERE utilisateur_id = %s
-    """, (utilisateur_id,))
+        ORDER BY matiere
+        """,
+        (utilisateur_id,),
+    )
     competences = cursor.fetchall()
     conn.close()
     return competences
 
+
 def delete_competence(competence_id):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM competence WHERE id = %s", (competence_id,))
+    cursor.execute('DELETE FROM competence WHERE id = %s', (competence_id,))
+    conn.commit()
+    conn.close()
+
+
+def delete_competence_for_user(competence_id, utilisateur_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        DELETE FROM competence
+        WHERE id = %s AND utilisateur_id = %s
+        """,
+        (competence_id, utilisateur_id),
+    )
     conn.commit()
     conn.close()

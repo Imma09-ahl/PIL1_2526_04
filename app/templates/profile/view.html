@@ -1,6 +1,127 @@
-{% extends "base.html" %}
+{% extends "layouts/app_layout.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Profil — {{ profile.user.prenom }} {{ profile.user.nom }}{% endblock %}
 
 {% block content %}
+<div class="max-w-3xl mx-auto space-y-lg profile-fade-in">
+
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl flex flex-col sm:flex-row items-center gap-lg">
+        <div class="shrink-0">
+            {% if profile.user.photo %}
+                <img class="w-28 h-28 rounded-full object-cover border-4 border-secondary" src="{{ url_for('static', filename='uploads/' + profile.user.photo) }}" alt="Photo de profil">
+            {% else %}
+                <div class="w-28 h-28 rounded-full bg-primary/10 border-4 border-secondary flex items-center justify-center text-2xl font-bold text-primary dark:text-secondary">
+                    {{ profile.user.prenom[0] }}{{ profile.user.nom[0] }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="flex-1 text-center sm:text-left space-y-sm">
+            <h1 class="font-display-lg text-2xl md:text-3xl text-primary dark:text-secondary">
+                {{ profile.user.prenom }} {{ profile.user.nom }}
+            </h1>
+            {% if profile.user.filiere and profile.user.niveau %}
+                <span class="inline-block bg-secondary/15 text-secondary border border-secondary/30 rounded-full px-md py-xs text-sm font-bold">
+                    {{ profile.user.filiere }} — {{ profile.user.niveau }}
+                </span>
+            {% else %}
+                <span class="inline-block text-sm text-on-surface-variant dark:text-gray-500">Filière / niveau non renseignés</span>
+            {% endif %}
+            <div class="text-sm text-on-surface-variant dark:text-gray-400 space-y-xs">
+                <p class="flex items-center justify-center sm:justify-start gap-xs">
+                    <span class="material-symbols-outlined text-base text-primary dark:text-secondary">mail</span>
+                    {{ profile.user.email }}
+                </p>
+                {% if profile.user.telephone %}
+                <p class="flex items-center justify-center sm:justify-start gap-xs">
+                    <span class="material-symbols-outlined text-base text-primary dark:text-secondary">call</span>
+                    {{ profile.user.telephone }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        {% if is_own_profile %}
+        <a class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90 transition-all text-sm flex items-center gap-xs" href="{{ url_for('profile.edit_profile') }}">
+            <span class="material-symbols-outlined text-base">edit</span>
+            Modifier
+        </a>
+        {% endif %}
+    </div>
+
+    {% if profile.user.bio %}
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-sm">
+        <h2 class="font-headline-lg text-lg text-primary dark:text-secondary flex items-center gap-sm">
+            <span class="material-symbols-outlined">description</span>
+            À propos
+        </h2>
+        <p class="text-on-surface-variant dark:text-gray-300 leading-relaxed">{{ profile.user.bio }}</p>
+    </div>
+    {% endif %}
+
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-lg">
+        <h2 class="font-headline-lg text-lg text-primary dark:text-secondary flex items-center gap-sm">
+            <span class="material-symbols-outlined">psychology</span>
+            Compétences et besoins
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+            <div class="space-y-sm">
+                <h3 class="text-sm font-bold text-secondary flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-base">check_circle</span>
+                    Je peux aider en
+                </h3>
+                {% if profile.forces %}
+                    <div class="flex flex-wrap gap-sm">
+                        {% for f in profile.forces %}
+                            <span class="tag-force">{{ f.matiere }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-sm text-on-surface-variant dark:text-gray-500 italic">Aucune compétence renseignée</p>
+                {% endif %}
+            </div>
+            <div class="space-y-sm">
+                <h3 class="text-sm font-bold text-red-500 flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-base">help</span>
+                    J'ai besoin d'aide en
+                </h3>
+                {% if profile.faiblesses %}
+                    <div class="flex flex-wrap gap-sm">
+                        {% for f in profile.faiblesses %}
+                            <span class="tag-weak">{{ f.matiere }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-sm text-on-surface-variant dark:text-gray-500 italic">Aucun besoin renseigné</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-md">
+        <h2 class="font-headline-lg text-lg text-primary dark:text-secondary flex items-center gap-sm">
+            <span class="material-symbols-outlined">calendar_month</span>
+            Disponibilités
+        </h2>
+        {% if profile.disponibilites %}
+            <ul class="space-y-sm">
+                {% for d in profile.disponibilites %}
+                    <li class="flex items-center gap-md p-md bg-surface-container-low dark:bg-[#1f2937] rounded-lg text-sm">
+                        <span class="font-bold text-primary dark:text-secondary min-w-[90px]">{{ d.jour }}</span>
+                        <span class="text-on-surface-variant dark:text-gray-300">{{ d.heure_debut_fmt }} — {{ d.heure_fin_fmt }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-sm text-on-surface-variant dark:text-gray-500 italic">Aucune disponibilité renseignée</p>
+        {% endif %}
+    </div>
+
+    <p class="text-center text-xs text-on-surface-variant dark:text-gray-500">
+        Membre depuis
+        {% if profile.user.created_at %}
+            {{ profile.user.created_at.strftime('%d/%m/%Y') }}
+        {% else %}
+            récemment
+        {% endif %}
+    </p>
+</div>
 {% endblock %}

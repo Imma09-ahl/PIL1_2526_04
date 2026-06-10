@@ -13,6 +13,7 @@ CREATE TABLE utilisateur (
     filiere VARCHAR(50),
     niveau VARCHAR(20),
     bio TEXT,
+    format_mentorat ENUM('presentiel', 'enligne', 'les_deux') DEFAULT 'les_deux',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
