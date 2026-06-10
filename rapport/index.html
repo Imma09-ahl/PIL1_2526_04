@@ -131,7 +131,8 @@ rapport/
 <section id="deploiement">
     <h2>6. Instructions de déploiement</h2>
     <pre># 1. Cloner le dépôt
-git clone &lt;url&gt; &amp;&amp; cd PIL1_2526_04
+git clone https://github.com/Imma09-ahl/PIL1_2526_04.git
+cd PIL1_2526_04
 
 # 2. Environnement Python
 python -m venv venv
@@ -139,7 +140,7 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 
 # 3. Base de données
-mysql -u root -p &lt; database/schema.sql
+mysql -u root -p < database/schema.sql
 
 # 4. Variables d'environnement (optionnel)
 set SECRET_KEY=votre_cle_secrete
