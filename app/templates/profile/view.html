@@ -1,6 +1,11 @@
-{% extends "base.html" %}
-
-{% block title %}{% endblock %}
-
+{% extends "layouts/app_layout.html" %}
+{% block title %}Profil — {{ profile.user.prenom }} {{ profile.user.nom }}{% endblock %}
 {% block content %}
+<div class="max-w-xl mx-auto bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-md">
+    <h1 class="font-display-lg text-2xl text-primary dark:text-secondary">{{ profile.user.prenom }} {{ profile.user.nom }}</h1>
+    <p class="text-sm text-gray-500">{{ profile.user.filiere or '—' }} · {{ profile.user.niveau or '—' }}</p>
+    <p class="text-sm">{{ profile.user.email }}</p>
+    {% if profile.user.bio %}<p class="text-sm text-gray-400">{{ profile.user.bio }}</p>{% endif %}
+    <a class="inline-block font-bold text-primary dark:text-secondary hover:underline" href="{{ url_for('matching.resultats') }}">← Retour au matching</a>
+</div>
 {% endblock %}

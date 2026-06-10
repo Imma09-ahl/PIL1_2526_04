@@ -5,8 +5,9 @@ def get_db():
     conn = mysql.connector.connect(
         host=current_app.config['MYSQL_HOST'],
         user=current_app.config['MYSQL_USER'],
+        port=current_app.config.get('MYSQL_PORT', 3306),
         password=current_app.config['MYSQL_PASSWORD'],
-        database=current_app.config['MYSQL_DB']
+        database=current_app.config['MYSQL_DB'],
     )
     return conn
 
@@ -24,6 +25,15 @@ def get_user_by_email(email):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM utilisateur WHERE email = %s", (email,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+
+def get_user_by_id(user_id):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM utilisateur WHERE id = %s', (user_id,))
     user = cursor.fetchone()
     conn.close()
     return user
