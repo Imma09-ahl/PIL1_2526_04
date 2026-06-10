@@ -37,6 +37,19 @@
                         {% if msg.expediteur_id != session.user_id %}
                         <p class="text-xs font-bold">{{ msg.prenom }} {{ msg.nom }}</p>
                         {% endif %}
+                        
+                        {# Afficher l'image si c'est un fichier image #}
+                        {% if msg.fichier_url and (msg.fichier_url.endswith('.jpg') or msg.fichier_url.endswith('.jpeg') or msg.fichier_url.endswith('.png') or msg.fichier_url.endswith('.gif') or msg.fichier_url.endswith('.webp')) %}
+                        <div class="mb-xs">
+                            <img src="{{ url_for('static', filename=msg.fichier_url) }}" alt="{{ msg.fichier_nom or 'Image' }}" class="max-w-full rounded-lg max-h-64 object-contain">
+                        </div>
+                        {% elif msg.fichier_url %}
+                        <div class="mb-xs flex items-center gap-xs text-xs opacity-80">
+                            <span class="material-symbols-outlined text-sm">attach_file</span>
+                            <a href="{{ url_for('static', filename=msg.fichier_url) }}" target="_blank" class="underline hover:opacity-70">{{ msg.fichier_nom or 'Fichier joint' }}</a>
+                        </div>
+                        {% endif %}
+                        
                         <p class="text-sm break-words message-content" data-original="{{ msg.contenu }}">{{ msg.contenu }}</p>
                         <div class="flex items-center justify-between gap-md">
                             <p class="text-xs opacity-70">

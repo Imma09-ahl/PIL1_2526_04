@@ -119,7 +119,7 @@
             <span class="material-symbols-outlined hidden" id="theme-toggle-light-icon">light_mode</span>
             <span class="text-sm font-medium">Thème</span>
         </button>
-        <button onclick="confirmLogout()" class="w-full flex items-center justify-center gap-sm font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-lg px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm">
+        <button onclick="showLogoutModal()" class="w-full flex items-center justify-center gap-sm font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-lg px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm">
             <span class="material-symbols-outlined text-base">logout</span>
             Déconnexion
         </button>
@@ -166,6 +166,40 @@
     </footer>
 </div>
 
+<!-- Modal de confirmation de déconnexion -->
+<div id="logout-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface dark:bg-[#111827] rounded-xl shadow-2xl max-w-md w-full p-lg space-y-lg animate-fade-in">
+        <div class="flex items-start gap-md">
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-2xl">logout</span>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-headline-lg text-xl text-on-surface dark:text-gray-100 mb-xs">Confirmer la déconnexion</h3>
+                <p class="text-sm text-on-surface-variant dark:text-gray-400">Voulez-vous vraiment vous déconnecter de votre compte ?</p>
+            </div>
+        </div>
+        <div class="flex gap-sm justify-end">
+            <button onclick="hideLogoutModal()" class="px-lg py-sm rounded-lg text-on-surface dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-[#1f2937] transition-colors font-medium">
+                Annuler
+            </button>
+            <button onclick="doLogout()" class="px-lg py-sm rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-bold flex items-center gap-xs">
+                <span class="material-symbols-outlined text-base">logout</span>
+                Se déconnecter
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes fade-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+}
+</style>
+
 <script>
 // Theme toggle
 document.addEventListener('DOMContentLoaded', () => {
@@ -196,12 +230,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Logout confirmation
-function confirmLogout() {
-    if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
-        window.location.href = '{{ url_for("auth.logout") }}';
-    }
+// Logout modal functions
+function showLogoutModal() {
+    document.getElementById('logout-modal').classList.remove('hidden');
 }
+
+function hideLogoutModal() {
+    document.getElementById('logout-modal').classList.add('hidden');
+}
+
+function doLogout() {
+    window.location.href = '{{ url_for("auth.logout") }}';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        hideLogoutModal();
+    }
+});
+
+// Close modal on background click
+document.getElementById('logout-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'logout-modal') {
+        hideLogoutModal();
+    }
+});
 </script>
 {% block scripts %}{% endblock %}
 </body>
