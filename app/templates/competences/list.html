@@ -17,9 +17,12 @@
     <div class="flex justify-between items-center px-6 py-4 max-w-container-max mx-auto">
         <a href="/" class="font-display-lg text-xl text-primary dark:text-secondary font-bold">IFRI MentorLink</a>
         <nav class="hidden md:flex items-center gap-6 text-sm">
-            <a href="/competences" class="text-primary dark:text-secondary font-bold">Compétences</a>
-            <a href="/matching" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary">Matching</a>
-            <a href="/dashboard" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary">Tableau de bord</a>
+            <a href="{{ url_for('competences.index') }}" class="text-primary dark:text-secondary font-bold">Compétences</a>
+            <a href="{{ url_for('profile.view_profile') }}" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary">Profil</a>
+            <a href="{{ url_for('dashboard.dashboard') }}" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary">Tableau de bord</a>
+            {% if session.user_id %}
+            <a href="{{ url_for('auth.logout') }}" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary">Déconnexion</a>
+            {% endif %}
         </nav>
         <button type="button" id="theme-toggle" class="rounded-full p-2 hover:bg-surface-container-low transition-colors" aria-label="Changer le thème">
             <span class="material-symbols-outlined" id="theme-toggle-dark-icon">dark_mode</span>
@@ -62,7 +65,7 @@
         <form class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end" action="{{ url_for('competences.ajouter') }}" method="post">
             <div class="md:col-span-5">
                 <label for="matiere" class="block text-sm font-medium mb-1">Nom de la matière</label>
-                <input type="text" id="matiere" name="matiere" placeholder="Ex. Python"
+                <input type="text" id="matiere" name="matiere" placeholder="Ex. Python" required maxlength="100"
                        class="w-full rounded-lg border-outline-variant dark:bg-[#1f2937] dark:border-gray-600 focus:ring-primary focus:border-primary"/>
                 <p class="text-xs text-gray-500 mt-1">Une matière à la fois — ajoutez Python, Java, SQL, Réseaux… séparément.</p>
             </div>
@@ -209,30 +212,34 @@
             Format des séances
         </h2>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Précisez comment vous préférez organiser vos sessions de mentorat.</p>
-        <div class="flex flex-wrap gap-4">
-            <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
-                <input type="radio" name="format" value="presentiel" class="text-secondary focus:ring-secondary"/>
-                <span>
-                    <span class="font-medium block">Présentiel</span>
-                    <span class="text-xs text-gray-500">Sur le campus IFRI</span>
-                </span>
-            </label>
-            <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
-                <input type="radio" name="format" value="en_ligne" class="text-secondary focus:ring-secondary"/>
-                <span>
-                    <span class="font-medium block">En ligne</span>
-                    <span class="text-xs text-gray-500">Visio, messagerie</span>
-                </span>
-            </label>
-            <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
-                <input type="radio" name="format" value="les_deux" class="text-secondary focus:ring-secondary" checked/>
-                <span>
-                    <span class="font-medium block">Les deux</span>
-                    <span class="text-xs text-gray-500">Présentiel ou en ligne</span>
-                </span>
-            </label>
-        </div>
-        <p class="text-xs text-gray-500 mt-4">Note : l'enregistrement du format en base nécessitera une évolution du schéma SQL (non modifié dans ce module).</p>
+        <form action="{{ url_for('competences.sauvegarder_format') }}" method="post" class="space-y-4">
+            <div class="flex flex-wrap gap-4">
+                <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
+                    <input type="radio" name="format" value="presentiel" class="text-secondary focus:ring-secondary" {% if format_actuel == 'presentiel' %}checked{% endif %}/>
+                    <span>
+                        <span class="font-medium block">Présentiel</span>
+                        <span class="text-xs text-gray-500">Sur le campus IFRI</span>
+                    </span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
+                    <input type="radio" name="format" value="enligne" class="text-secondary focus:ring-secondary" {% if format_actuel == 'enligne' %}checked{% endif %}/>
+                    <span>
+                        <span class="font-medium block">En ligne</span>
+                        <span class="text-xs text-gray-500">Visio, messagerie</span>
+                    </span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer bg-surface-container-low dark:bg-[#1f2937] border border-outline-variant rounded-xl px-5 py-4 flex-1 min-w-[180px] has-[:checked]:border-secondary has-[:checked]:ring-2 has-[:checked]:ring-secondary/30">
+                    <input type="radio" name="format" value="les_deux" class="text-secondary focus:ring-secondary" {% if format_actuel == 'les_deux' %}checked{% endif %}/>
+                    <span>
+                        <span class="font-medium block">Les deux</span>
+                        <span class="text-xs text-gray-500">Présentiel ou en ligne</span>
+                    </span>
+                </label>
+            </div>
+            <button type="submit" class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90">
+                Enregistrer le format
+            </button>
+        </form>
     </section>
 
 </main>
