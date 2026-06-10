@@ -1,0 +1,42 @@
+.matching-fade-in { animation: matchingFadeIn 0.45s ease-out; }
+
+@keyframes matchingFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.5s, transform 0.5s; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+.matching-tag-primary {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(26, 35, 126, 0.1);
+    color: #1a237e;
+    border: 1px solid rgba(26, 35, 126, 0.2);
+}
+
+.dark .matching-tag-primary {
+    color: #90caf9;
+    background: rgba(26, 35, 126, 0.3);
+}
+
+.matching-tag-secondary {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(0, 200, 83, 0.12);
+    color: #00a844;
+    border: 1px solid rgba(0, 200, 83, 0.3);
+}
+
+.dark .matching-tag-secondary { color: #00c853; }
+
+.matching-score-badge[data-level="high"] .text-secondary { color: #00c853; }
+.matching-score-badge[data-level="medium"] .text-secondary { color: #ffb300; }
+.matching-score-badge[data-level="low"] .text-secondary { color: #9e9e9e; }

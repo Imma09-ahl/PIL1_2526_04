@@ -1,6 +1,134 @@
-{% extends "base.html" %}
+{% extends "layouts/app_layout.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Résultats de matching — IFRI MentorLink{% endblock %}
 
 {% block content %}
+<div class="space-y-xl matching-fade-in">
+
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-lg">
+        <div class="space-y-sm">
+            <p class="text-sm font-bold uppercase tracking-wider text-secondary">Matching intelligent</p>
+            <h1 class="font-display-lg text-3xl text-primary dark:text-secondary">Vos mentors recommandés</h1>
+            <p class="text-on-surface-variant dark:text-gray-400 max-w-2xl">
+                Combinaisons basées sur vos lacunes, vos disponibilités et la proximité académique (filière et niveau).
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-sm items-end">
+            <label class="text-sm" for="score-filter">
+                Score minimum
+                <select id="score-filter" class="block mt-xs rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm">
+                    <option value="0">Tous</option>
+                    <option value="30">≥ 30 %</option>
+                    <option value="50">≥ 50 %</option>
+                    <option value="70">≥ 70 %</option>
+                </select>
+            </label>
+            <button type="button" id="sort-score-btn" class="font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-lg py-sm hover:bg-primary-container dark:hover:bg-primary/20">
+                Trier par score
+            </button>
+        </div>
+    </div>
+
+    {% if resultats %}
+    <div id="matching-results" class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        {% for match in resultats %}
+        <article class="matching-card bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-md fade-in" data-score="{{ match.score }}">
+            <div class="flex justify-between items-start gap-md">
+                <div class="flex items-center gap-md">
+                    {% if match.photo %}
+                    <img class="w-14 h-14 rounded-full object-cover border-2 border-secondary" src="{{ url_for('static', filename='uploads/' + match.photo) }}" alt="Photo de {{ match.prenom }}">
+                    {% else %}
+                    <div class="w-14 h-14 rounded-full bg-primary/10 border-2 border-secondary flex items-center justify-center font-bold text-primary dark:text-secondary">
+                        {{ match.prenom[0] }}{{ match.nom[0] }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h2 class="font-headline-lg text-lg text-on-surface dark:text-gray-100">{{ match.prenom }} {{ match.nom }}</h2>
+                        <p class="text-sm text-gray-500">
+                            {% if match.filiere %}{{ match.filiere }}{% endif %}
+                            {% if match.niveau %} · {{ match.niveau }}{% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="text-center shrink-0 matching-score-badge" data-level="{% if match.score >= 70 %}high{% elif match.score >= 40 %}medium{% else %}low{% endif %}">
+                    <span class="block text-2xl font-bold text-secondary">{{ match.score }}%</span>
+                    <span class="text-xs text-gray-500">Compatibilité</span>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold text-primary dark:text-secondary mb-sm">Matières en commun</h3>
+                {% if match.matieres_communes %}
+                <div class="flex flex-wrap gap-sm">
+                    {% for matiere in match.matieres_communes %}
+                    <span class="matching-tag-primary">{{ matiere }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-sm text-gray-500 italic">Aucune matière commune.</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold text-primary dark:text-secondary mb-sm">Disponibilités communes</h3>
+                {% if match.disponibilites_communes %}
+                <div class="flex flex-wrap gap-sm">
+                    {% for creneau in match.disponibilites_communes %}
+                    <span class="matching-tag-secondary">{{ creneau }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-sm text-gray-500 italic">Aucun créneau commun.</p>
+                {% endif %}
+            </div>
+
+            {% if match.bio %}
+            <p class="text-sm text-on-surface-variant dark:text-gray-400 border-t border-outline-variant pt-md">{{ match.bio }}</p>
+            {% endif %}
+
+            <div class="flex justify-between items-center pt-md border-t border-outline-variant">
+                <a class="text-sm text-primary dark:text-secondary hover:underline" href="{{ url_for('profile.view_other_profile', user_id=match.utilisateur_id) }}">Voir le profil</a>
+                <form method="POST" action="{{ url_for('messages.nouvelle_conversation', autre_utilisateur_id=match.utilisateur_id) }}">
+                    <button type="submit" class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90 flex items-center gap-xs">
+                        <span class="material-symbols-outlined text-base">chat</span>
+                        Contacter
+                    </button>
+                </form>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-xl bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl space-y-md">
+        <span class="material-symbols-outlined text-5xl text-gray-400">person_search</span>
+        <h2 class="font-headline-lg text-xl text-primary dark:text-secondary">Aucun match pour l'instant</h2>
+        <p class="text-on-surface-variant dark:text-gray-400 max-w-md mx-auto">
+            Complétez vos lacunes et disponibilités dans votre profil pour obtenir des recommandations pertinentes.
+        </p>
+        <a class="inline-block font-bold bg-secondary text-on-secondary rounded-full px-xl py-md hover:opacity-90" href="{{ url_for('profile.edit_profile') }}">Compléter mon profil</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.MATCHING_USER_ID = {{ user_id }};
+</script>
+<script src="{{ url_for('static', filename='js/matching.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+    if (!btn) return;
+    const apply = (t) => {
+        if (t === 'dark') { document.documentElement.classList.add('dark'); lightIcon.classList.remove('hidden'); darkIcon.classList.add('hidden'); }
+        else { document.documentElement.classList.remove('dark'); darkIcon.classList.remove('hidden'); lightIcon.classList.add('hidden'); }
+    };
+    const saved = localStorage.getItem('color-theme') || 'dark';
+    apply(saved);
+    btn.addEventListener('click', () => { const n = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; localStorage.setItem('color-theme', n); apply(n); });
+});
+</script>
 {% endblock %}
