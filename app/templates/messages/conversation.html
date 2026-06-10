@@ -32,15 +32,30 @@
         <div id="messages-container" class="flex-1 overflow-y-auto p-lg space-y-md">
             {% if messages %}
                 {% for msg in messages %}
-                <div class="flex {% if msg.expediteur_id == session.user_id %}justify-end{% else %}justify-start{% endif %}">
-                    <div class="max-w-[70%] {% if msg.expediteur_id == session.user_id %}bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary{% else %}bg-surface-container-low dark:bg-[#1f2937] text-on-surface dark:text-gray-100{% endif %} rounded-xl p-md space-y-xs">
+                <div class="flex {% if msg.expediteur_id == session.user_id %}justify-end{% else %}justify-start{% endif %}" data-message-id="{{ msg.id }}" data-created-at="{{ msg.created_at.timestamp() }}">
+                    <div class="max-w-[70%] {% if msg.expediteur_id == session.user_id %}bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary{% else %}bg-surface-container-low dark:bg-[#1f2937] text-on-surface dark:text-gray-100{% endif %} rounded-xl p-md space-y-xs relative group">
                         {% if msg.expediteur_id != session.user_id %}
                         <p class="text-xs font-bold">{{ msg.prenom }} {{ msg.nom }}</p>
                         {% endif %}
-                        <p class="text-sm break-words">{{ msg.contenu }}</p>
-                        <p class="text-xs opacity-70">
-                            {{ msg.created_at.strftime('%H:%M') }}
-                        </p>
+                        <p class="text-sm break-words message-content" data-original="{{ msg.contenu }}">{{ msg.contenu }}</p>
+                        <div class="flex items-center justify-between gap-md">
+                            <p class="text-xs opacity-70">
+                                {{ msg.created_at.strftime('%H:%M') }}
+                                {% if msg.expediteur_id == session.user_id %}
+                                    <span class="ml-xs">{% if msg.lu %}✓✓{% else %}✓{% endif %}</span>
+                                {% endif %}
+                            </p>
+                            {% if msg.expediteur_id == session.user_id and msg.contenu != '[Message supprimé]' %}
+                            <div class="hidden group-hover:flex items-center gap-xs">
+                                <button onclick="editMessage({{ msg.id }}, this)" class="text-xs hover:opacity-70" title="Modifier">
+                                    <span class="material-symbols-outlined text-sm">edit</span>
+                                </button>
+                                <button onclick="deleteMessage({{ msg.id }})" class="text-xs hover:opacity-70" title="Supprimer">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -56,24 +71,36 @@
 
         <!-- Message Input -->
         <div class="p-lg border-t border-outline-variant">
-            <form id="message-form" method="POST" class="flex gap-md">
-                <input 
-                    type="text" 
-                    name="contenu" 
-                    id="message-input"
-                    placeholder="Écrivez votre message..."
-                    class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent"
-                    required
-                    maxlength="2000"
-                    autocomplete="off"
-                />
-                <button 
-                    type="submit"
-                    class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-lg px-lg py-sm hover:opacity-90 flex items-center gap-xs transition-all"
-                >
-                    <span class="material-symbols-outlined">send</span>
-                    Envoyer
-                </button>
+            <form id="message-form" method="POST" enctype="multipart/form-data" class="space-y-sm">
+                <div class="flex gap-sm items-end">
+                    <div class="flex-1 space-y-xs">
+                        <input 
+                            type="text" 
+                            name="contenu" 
+                            id="message-input"
+                            placeholder="Écrivez votre message..."
+                            class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent"
+                            maxlength="2000"
+                            autocomplete="off"
+                        />
+                        <div id="file-preview" class="hidden text-xs text-on-surface-variant dark:text-gray-400 flex items-center gap-xs">
+                            <span class="material-symbols-outlined text-sm">attach_file</span>
+                            <span id="file-name"></span>
+                            <button type="button" onclick="clearFile()" class="text-red-500 hover:opacity-70">✕</button>
+                        </div>
+                    </div>
+                    <label for="file-input" class="cursor-pointer p-sm hover:bg-surface-container-low rounded-lg transition-colors" title="Joindre un fichier">
+                        <span class="material-symbols-outlined text-primary dark:text-secondary">attach_file</span>
+                    </label>
+                    <input type="file" id="file-input" name="fichier" class="hidden" accept="image/*,.pdf,.doc,.docx,.txt" onchange="previewFile(this)">
+                    <button 
+                        type="submit"
+                        class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-lg px-lg py-sm hover:opacity-90 flex items-center gap-xs transition-all"
+                    >
+                        <span class="material-symbols-outlined">send</span>
+                        Envoyer
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -114,6 +141,20 @@
             </ul>
         </div>
 
+        <div class="space-y-sm pt-md border-t border-outline-variant">
+            <h4 class="text-sm font-bold text-primary dark:text-secondary flex items-center gap-xs">
+                <span class="material-symbols-outlined text-base">help</span>
+                Fonctionnalités
+            </h4>
+            <ul class="text-xs text-on-surface-variant dark:text-gray-400 space-y-xs">
+                <li>✓ Envoi de messages texte</li>
+                <li>✓ Envoi de fichiers/images</li>
+                <li>✓ Modification (15 min)</li>
+                <li>✓ Suppression de messages</li>
+                <li>✓ Confirmation de lecture</li>
+            </ul>
+        </div>
+
         <a href="{{ url_for('messages.index') }}" 
            class="w-full flex items-center justify-center gap-xs font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-lg px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm">
             <span class="material-symbols-outlined text-base">arrow_back</span>
@@ -124,10 +165,29 @@
 </div>
 
 <script>
+const CONVERSATION_ID = {{ conversation_id }};
+const USER_ID = {{ session.user_id }};
+const EDIT_TIME_LIMIT = 15 * 60 * 1000; // 15 minutes en millisecondes
+
 // Auto-scroll to bottom on load
 const container = document.getElementById('messages-container');
 if (container) {
     container.scrollTop = container.scrollHeight;
+}
+
+// File preview
+function previewFile(input) {
+    const preview = document.getElementById('file-preview');
+    const fileName = document.getElementById('file-name');
+    if (input.files && input.files[0]) {
+        fileName.textContent = input.files[0].name;
+        preview.classList.remove('hidden');
+    }
+}
+
+function clearFile() {
+    document.getElementById('file-input').value = '';
+    document.getElementById('file-preview').classList.add('hidden');
 }
 
 // AJAX form submission
@@ -137,58 +197,94 @@ const input = document.getElementById('message-input');
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const contenu = input.value.trim();
-    if (!contenu) return;
+    const formData = new FormData(form);
+    const contenu = formData.get('contenu').trim();
+    const fichier = formData.get('fichier');
+    
+    if (!contenu && (!fichier || !fichier.name)) return;
     
     try {
         const response = await fetch(window.location.href, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: `contenu=${encodeURIComponent(contenu)}`
+            body: formData
         });
         
         if (response.ok) {
-            const data = await response.json();
-            
-            // Add message to UI
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'flex justify-end';
-            messageDiv.innerHTML = `
-                <div class="max-w-[70%] bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-xl p-md space-y-xs">
-                    <p class="text-sm break-words">${escapeHtml(data.contenu)}</p>
-                    <p class="text-xs opacity-70">${new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</p>
-                </div>
-            `;
-            container.appendChild(messageDiv);
-            container.scrollTop = container.scrollHeight;
-            
-            // Clear input
+            // Clear form
             input.value = '';
+            clearFile();
+            
+            // Reload messages
+            location.reload();
         }
     } catch (error) {
         console.error('Error sending message:', error);
     }
 });
 
+// Delete message
+function deleteMessage(messageId) {
+    if (!confirm('Voulez-vous vraiment supprimer ce message ?')) return;
+    
+    fetch(`/messages/${CONVERSATION_ID}/delete/${messageId}`, {
+        method: 'POST'
+    }).then(() => location.reload());
+}
+
+// Edit message
+function editMessage(messageId, button) {
+    const messageDiv = button.closest('[data-message-id]');
+    const createdAt = parseFloat(messageDiv.dataset.createdAt) * 1000;
+    const now = Date.now();
+    
+    // Check 15 minute limit
+    if (now - createdAt > EDIT_TIME_LIMIT) {
+        alert('Vous ne pouvez plus modifier ce message (délai de 15 minutes dépassé).');
+        return;
+    }
+    
+    const contentEl = messageDiv.querySelector('.message-content');
+    const originalContent = contentEl.dataset.original;
+    
+    const newContent = prompt('Modifier le message:', originalContent);
+    if (newContent && newContent.trim() && newContent !== originalContent) {
+        fetch(`/messages/${CONVERSATION_ID}/update/${messageId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `contenu=${encodeURIComponent(newContent.trim())}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                contentEl.textContent = data.contenu;
+                contentEl.dataset.original = data.contenu;
+            } else {
+                alert(data.error || 'Erreur lors de la modification');
+            }
+        });
+    }
+}
+
 // Poll for new messages every 3 seconds
 let lastMessageId = {{ messages[-1].id if messages else 0 }};
 
 setInterval(async () => {
     try {
-        const response = await fetch(`{{ url_for('messages.nouveaux_messages', conversation_id=conversation_id) }}?last_id=${lastMessageId}`);
+        const response = await fetch(`/messages/${CONVERSATION_ID}/nouveaux?last_id=${lastMessageId}`);
         const data = await response.json();
         
         if (data.messages && data.messages.length > 0) {
             data.messages.forEach(msg => {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'flex justify-start';
+                messageDiv.dataset.messageId = msg.id;
+                messageDiv.dataset.createdAt = new Date(msg.created_at).getTime() / 1000;
                 messageDiv.innerHTML = `
                     <div class="max-w-[70%] bg-surface-container-low dark:bg-[#1f2937] text-on-surface dark:text-gray-100 rounded-xl p-md space-y-xs">
                         <p class="text-xs font-bold">${escapeHtml(msg.prenom)} ${escapeHtml(msg.nom)}</p>
-                        <p class="text-sm break-words">${escapeHtml(msg.contenu)}</p>
+                        <p class="text-sm break-words message-content" data-original="${escapeHtml(msg.contenu)}">${escapeHtml(msg.contenu)}</p>
                         <p class="text-xs opacity-70">${new Date(msg.created_at).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</p>
                     </div>
                 `;

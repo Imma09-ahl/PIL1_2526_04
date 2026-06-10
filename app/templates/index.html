@@ -158,7 +158,7 @@
     </div>
     <div class="flex-1 w-full">
         <div class="rounded-2xl overflow-hidden shadow-2xl aspect-[4/5] md:aspect-[4/3] bg-surface-container-low relative">
-            <img alt="Étudiants de l'IFRI" class="w-full h-full object-cover object-top" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANJNAcItlhmVG4kQg1oJTnDlr60GU6saNIqd2KHd2_A_pcnJXMZzognPfXPvr4nsbXV6Z3a2kDELYq0CEm1z5esuzK4T-8hzudv2BO3yfESzG4kdXIyztSXy3jmiWRrIq71w312zr4HKKe-wj1XolAjHGf8mHrQjdF5ZoGcSlOzQV1ObBSGU0v-Mq6RKxtqPQ-NpMBwiWZ_ul06BvoJNRjwBP-60oGc09U7Q5BoG6JKL91QquHw-KKOGh-nrqBuzcLP_BuwBYcyPn0"/>
+            <img alt="Étudiants de l'IFRI" class="w-full h-full object-cover object-center" src="{{ url_for('static', filename='uploads/hero-image.jpg') }}"/>
         </div>
     </div>
 </section>
@@ -219,13 +219,17 @@
         <h2 class="font-display-lg text-3xl md:text-5xl text-center text-primary dark:text-secondary mb-xl">Qui peut utiliser MentorLink ?</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
             <div class="bg-blue-50 dark:bg-primary/10 p-xl rounded-2xl border border-primary/10 flex flex-col items-start space-y-md">
-                <span class="text-5xl">🎓</span>
+                <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary dark:text-secondary text-4xl">school</span>
+                </div>
                 <h3 class="font-headline-lg text-2xl text-primary dark:text-secondary">Tu maîtrises une matière ?</h3>
                 <p class="text-on-surface-variant dark:text-gray-300">Partage tes connaissances avec tes camarades de l'IFRI. Deviens mentor et aide les autres à progresser.</p>
                 <a class="mt-auto font-bold text-primary dark:text-secondary hover:underline flex items-center gap-xs" href="{{ url_for('auth.register') }}">Devenir mentor →</a>
             </div>
             <div class="bg-green-50 dark:bg-secondary/10 p-xl rounded-2xl border border-secondary/10 flex flex-col items-start space-y-md">
-                <span class="text-5xl">📚</span>
+                <div class="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-secondary text-4xl">menu_book</span>
+                </div>
                 <h3 class="font-headline-lg text-2xl text-secondary">Tu as besoin d'aide ?</h3>
                 <p class="text-on-surface-variant dark:text-gray-300">Trouve le mentor idéal parmi les étudiants de l'IFRI qui maîtrisent les matières où tu as des lacunes.</p>
                 <a class="mt-auto font-bold text-secondary hover:underline flex items-center gap-xs" href="{{ url_for('auth.register') }}">Trouver un mentor →</a>
@@ -253,7 +257,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
             <div class="bg-surface dark:bg-[#0a0f1e] p-xl rounded-2xl border border-outline-variant space-y-lg shadow-sm">
                 <div class="flex items-center gap-md">
-                    <span class="text-4xl">😓</span>
+                    <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-red-500 text-2xl">sentiment_dissatisfied</span>
+                    </div>
                     <h3 class="font-headline-lg text-xl opacity-70">Avant MentorLink</h3>
                 </div>
                 <ul class="space-y-md text-on-surface-variant text-sm">
@@ -266,7 +272,9 @@
             <div class="bg-surface dark:bg-[#0a0f1e] p-xl rounded-2xl border-2 border-secondary space-y-lg shadow-lg relative overflow-hidden">
                 <div class="absolute top-0 right-0 bg-secondary text-on-secondary px-lg py-xs text-xs font-bold rounded-bl-xl">SUCCÈS</div>
                 <div class="flex items-center gap-md">
-                    <span class="text-4xl">😊</span>
+                    <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-secondary text-2xl">sentiment_satisfied</span>
+                    </div>
                     <h3 class="font-headline-lg text-xl text-secondary">Après MentorLink</h3>
                 </div>
                 <ul class="space-y-md text-sm">

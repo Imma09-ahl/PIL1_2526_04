@@ -119,10 +119,10 @@
             <span class="material-symbols-outlined hidden" id="theme-toggle-light-icon">light_mode</span>
             <span class="text-sm font-medium">Thème</span>
         </button>
-        <a class="w-full flex items-center justify-center gap-sm font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-lg px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm" href="{{ url_for('auth.logout') }}">
+        <button onclick="confirmLogout()" class="w-full flex items-center justify-center gap-sm font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-lg px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm">
             <span class="material-symbols-outlined text-base">logout</span>
             Déconnexion
-        </a>
+        </button>
     </div>
 </aside>
 
@@ -195,6 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
         apply(newTheme);
     });
 });
+
+// Logout confirmation
+function confirmLogout() {
+    if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+        window.location.href = '{{ url_for("auth.logout") }}';
+    }
+}
 </script>
 {% block scripts %}{% endblock %}
 </body>

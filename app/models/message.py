@@ -75,7 +75,7 @@ def user_in_conversation(conversation_id, user_id):
     return user_id in (conversation['utilisateur1_id'], conversation['utilisateur2_id'])
 
 
-def send_message(conversation_id, expediteur_id, contenu):
+def send_message(conversation_id, expediteur_id, contenu, fichier_url=None, fichier_nom=None, type_message='text'):
     conn = get_db()
     try:
         cursor = conn.cursor()
@@ -89,6 +89,73 @@ def send_message(conversation_id, expediteur_id, contenu):
         conn.commit()
         message_id = cursor.lastrowid
         return message_id
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def mark_messages_as_read(conversation_id, user_id):
+    """Marque tous les messages d'une conversation comme lus pour l'utilisateur"""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE message
+            SET lu = TRUE
+            WHERE conversation_id = %s
+            AND expediteur_id != %s
+            AND lu = FALSE
+            """,
+            (conversation_id, user_id),
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def delete_message(message_id, user_id):
+    """Supprime un message (soft delete en mettant le contenu vide)"""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE message
+            SET contenu = '[Message supprimé]'
+            WHERE id = %s AND expediteur_id = %s
+            """,
+            (message_id, user_id),
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def update_message(message_id, user_id, new_content):
+    """Modifie un message"""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE message
+            SET contenu = %s
+            WHERE id = %s AND expediteur_id = %s
+            """,
+            (new_content.strip(), message_id, user_id),
+        )
+        conn.commit()
+        return cursor.rowcount > 0
     except Exception as e:
         conn.rollback()
         raise

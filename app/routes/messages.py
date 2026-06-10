@@ -1,4 +1,7 @@
 from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
+from werkzeug.utils import secure_filename
+import os
+from datetime import datetime
 
 from app.models.message import (
     find_or_create_conversation,
@@ -8,6 +11,9 @@ from app.models.message import (
     get_new_messages,
     send_message,
     user_in_conversation,
+    mark_messages_as_read,
+    delete_message,
+    update_message,
 )
 from app.utils.decorators import login_required
 
@@ -50,12 +56,30 @@ def conversation(conversation_id):
 
     if request.method == 'POST':
         contenu = (request.form.get('contenu') or '').strip()
-        if not contenu:
+        
+        # Gérer l'upload de fichier
+        fichier = request.files.get('fichier')
+        fichier_url = None
+        fichier_nom = None
+        
+        if fichier and fichier.filename:
+            # Sauvegarder le fichier
+            filename = secure_filename(f"{datetime.now().timestamp()}_{fichier.filename}")
+            upload_dir = os.path.join('app', 'static', 'uploads', 'messages')
+            os.makedirs(upload_dir, exist_ok=True)
+            filepath = os.path.join(upload_dir, filename)
+            fichier.save(filepath)
+            fichier_url = f"uploads/messages/{filename}"
+            fichier_nom = fichier.filename
+            if not contenu:
+                contenu = f"[Fichier: {fichier_nom}]"
+        
+        if not contenu and not fichier_url:
             flash('Le message ne peut pas être vide.', 'error')
         elif len(contenu) > 2000:
             flash('Le message ne doit pas dépasser 2000 caractères.', 'error')
         else:
-            send_message(conversation_id, user_id, contenu)
+            send_message(conversation_id, user_id, contenu, fichier_url, fichier_nom)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 messages = get_messages(conversation_id)
                 last = messages[-1] if messages else None
@@ -69,6 +93,9 @@ def conversation(conversation_id):
                 })
             return redirect(url_for('messages.conversation', conversation_id=conversation_id))
 
+    # Marquer les messages comme lus
+    mark_messages_as_read(conversation_id, user_id)
+    
     messages = get_messages(conversation_id)
     return render_template(
         'messages/conversation.html',
@@ -113,3 +140,33 @@ def nouvelle_conversation(autre_utilisateur_id):
         return redirect(url_for('messages.index'))
 
     return redirect(url_for('messages.conversation', conversation_id=conversation_id))
+
+
+@messages_bp.route('/messages/<int:conversation_id>/delete/<int:message_id>', methods=['POST'])
+@login_required
+def delete_msg(conversation_id, message_id):
+    if not user_in_conversation(conversation_id, session['user_id']):
+        abort(403)
+    
+    if delete_message(message_id, session['user_id']):
+        flash('Message supprimé.', 'success')
+    else:
+        flash('Impossible de supprimer ce message.', 'error')
+    
+    return redirect(url_for('messages.conversation', conversation_id=conversation_id))
+
+
+@messages_bp.route('/messages/<int:conversation_id>/update/<int:message_id>', methods=['POST'])
+@login_required
+def update_msg(conversation_id, message_id):
+    if not user_in_conversation(conversation_id, session['user_id']):
+        abort(403)
+    
+    new_content = (request.form.get('contenu') or '').strip()
+    if not new_content:
+        return jsonify({'error': 'Le message ne peut pas être vide'}), 400
+    
+    if update_message(message_id, session['user_id'], new_content):
+        return jsonify({'success': True, 'contenu': new_content})
+    else:
+        return jsonify({'error': 'Impossible de modifier ce message'}), 400
