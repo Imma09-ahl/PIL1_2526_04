@@ -27,7 +27,7 @@ def index():
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if session.get('user_id'):
-        return redirect(url_for('auth.index'))
+        return redirect(url_for('dashboard.dashboard'))
 
     if request.method == 'GET':
         return render_template('auth/register.html')
@@ -65,7 +65,7 @@ def register():
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('user_id'):
-        return redirect(url_for('auth.index'))
+        return redirect(url_for('dashboard.dashboard'))
 
     if request.method == 'GET':
         return render_template('auth/login.html')
@@ -87,7 +87,7 @@ def login():
     session['user_email'] = user['email']
 
     flash(f"Bienvenue, {user['prenom']} !", 'success')
-    return redirect(url_for('auth.index'))
+    return redirect(url_for('dashboard.dashboard'))
 
 
 @auth_bp.route('/logout')
@@ -100,7 +100,7 @@ def logout():
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if session.get('user_id'):
-        return redirect(url_for('auth.index'))
+        return redirect(url_for('dashboard.dashboard'))
 
     if request.method == 'GET':
         return render_template('auth/forgot_password.html')
@@ -126,7 +126,7 @@ def forgot_password():
 @auth_bp.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
     if session.get('user_id'):
-        return redirect(url_for('auth.index'))
+        return redirect(url_for('dashboard.dashboard'))
 
     if not is_reset_session_active():
         flash('Votre code a expiré. Veuillez faire une nouvelle demande.', 'error')

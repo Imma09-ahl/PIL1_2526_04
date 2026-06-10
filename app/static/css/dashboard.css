@@ -1,0 +1,20 @@
+/* Animations et compléments pour le tableau de bord */
+
+.dashboard-fade-in {
+    animation: dashboardFadeIn 0.5s ease-out;
+}
+
+@keyframes dashboardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#completion-bar {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}

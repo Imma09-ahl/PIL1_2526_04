@@ -107,6 +107,7 @@
                 <span class="hidden sm:block text-sm text-on-surface-variant dark:text-gray-300">
                     Bonjour, <span class="font-bold text-primary dark:text-secondary">{{ session.user_prenom }}</span>
                 </span>
+                <a class="hidden sm:block font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-lg py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all" href="{{ url_for('dashboard.dashboard') }}">Tableau de bord</a>
                 <a class="font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-lg py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all" href="{{ url_for('auth.logout') }}">Déconnexion</a>
             {% else %}
                 <a class="hidden sm:block font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-lg py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all" href="{{ url_for('auth.login') }}">Connexion</a>
@@ -147,7 +148,7 @@
         </p>
         <div class="pt-sm flex flex-col sm:flex-row gap-md justify-center md:justify-start">
             {% if session.user_id %}
-                <span class="font-bold bg-secondary/20 text-secondary border border-secondary rounded-full px-xl py-md text-center">Vous êtes connecté(e)</span>
+                <a class="font-bold bg-secondary text-on-secondary rounded-full px-xl py-md hover:shadow-lg transition-all text-center" href="{{ url_for('dashboard.dashboard') }}">Accéder au tableau de bord</a>
                 <a class="font-bold text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary px-base py-md hover:opacity-70 transition-all text-center" href="#programmes">Découvrir les mentors</a>
             {% else %}
                 <a class="font-bold bg-secondary text-on-secondary rounded-full px-xl py-md hover:shadow-lg transition-all text-center" href="{{ url_for('auth.register') }}">Rejoindre la plateforme</a>
@@ -345,6 +346,7 @@
                 <ul class="space-y-sm text-sm">
                     <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="/">Accueil</a></li>
                     {% if session.user_id %}
+                        <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="{{ url_for('dashboard.dashboard') }}">Tableau de bord</a></li>
                         <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="{{ url_for('auth.logout') }}">Déconnexion</a></li>
                     {% else %}
                         <li><a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="{{ url_for('auth.register') }}">S'inscrire</a></li>
