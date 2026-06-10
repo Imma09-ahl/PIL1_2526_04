@@ -1,0 +1,55 @@
+.messages-fade-in {
+    animation: messagesFadeIn 0.4s ease-out;
+}
+
+@keyframes messagesFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 0.65rem 1rem;
+    border-radius: 1rem;
+    word-wrap: break-word;
+}
+
+.message-moi {
+    align-self: flex-end;
+    background: #00c853;
+    color: #0a0f1e;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.message-autre {
+    align-self: flex-start;
+    background: #e8eaf6;
+    color: #1a1c1d;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.dark .message-autre {
+    background: #1f2937;
+    color: #f9f9fb;
+}
+
+.message-contenu {
+    margin: 0.15rem 0;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.message-date {
+    display: block;
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+.new-message-badge {
+    animation: pulse 1s ease-in-out 2;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
