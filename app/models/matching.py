@@ -8,49 +8,55 @@ POIDS_PROXIMITE = 0.20
 
 def _get_competences(utilisateur_id, type_competence):
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(
-        """
-        SELECT matiere FROM competence
-        WHERE utilisateur_id = %s AND type = %s
-        """,
-        (utilisateur_id, type_competence),
-    )
-    rows = cursor.fetchall()
-    conn.close()
-    return [row["matiere"] for row in rows]
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT matiere FROM competence
+            WHERE utilisateur_id = %s AND type = %s
+            """,
+            (utilisateur_id, type_competence),
+        )
+        rows = cursor.fetchall()
+        return [row["matiere"] for row in rows]
+    finally:
+        conn.close()
 
 
 def _get_disponibilites(utilisateur_id):
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(
-        """
-        SELECT jour, heure_debut, heure_fin
-        FROM disponibilite
-        WHERE utilisateur_id = %s
-        """,
-        (utilisateur_id,),
-    )
-    rows = cursor.fetchall()
-    conn.close()
-    return rows
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT jour, heure_debut, heure_fin
+            FROM disponibilite
+            WHERE utilisateur_id = %s
+            """,
+            (utilisateur_id,),
+        )
+        rows = cursor.fetchall()
+        return rows
+    finally:
+        conn.close()
 
 
 def _get_utilisateur(utilisateur_id):
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(
-        """
-        SELECT id, nom, prenom, photo, filiere, niveau, bio
-        FROM utilisateur
-        WHERE id = %s
-        """,
-        (utilisateur_id,),
-    )
-    user = cursor.fetchone()
-    conn.close()
-    return user
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT id, nom, prenom, photo, filiere, niveau, bio
+            FROM utilisateur
+            WHERE id = %s
+            """,
+            (utilisateur_id,),
+        )
+        user = cursor.fetchone()
+        return user
+    finally:
+        conn.close()
 
 
 def _times_overlap(debut_a, fin_a, debut_b, fin_b):
@@ -137,57 +143,64 @@ def calculer_score(mentor_id, mentore_id):
 def save_matching(mentor_id, mentore_id, score):
     """Enregistre ou met à jour un résultat de matching."""
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor = conn.cursor(dictionary=True)
 
-    cursor.execute(
-        """
-        SELECT id FROM matching
-        WHERE mentor_id = %s AND mentore_id = %s
-        """,
-        (mentor_id, mentore_id),
-    )
-    existing = cursor.fetchone()
-
-    if existing:
         cursor.execute(
             """
-            UPDATE matching SET score = %s
+            SELECT id FROM matching
             WHERE mentor_id = %s AND mentore_id = %s
             """,
-            (score, mentor_id, mentore_id),
+            (mentor_id, mentore_id),
         )
-    else:
-        cursor.execute(
-            """
-            INSERT INTO matching (mentor_id, mentore_id, score)
-            VALUES (%s, %s, %s)
-            """,
-            (mentor_id, mentore_id, score),
-        )
+        existing = cursor.fetchone()
 
-    conn.commit()
-    conn.close()
+        if existing:
+            cursor.execute(
+                """
+                UPDATE matching SET score = %s
+                WHERE mentor_id = %s AND mentore_id = %s
+                """,
+                (score, mentor_id, mentore_id),
+            )
+        else:
+            cursor.execute(
+                """
+                INSERT INTO matching (mentor_id, mentore_id, score)
+                VALUES (%s, %s, %s)
+                """,
+                (mentor_id, mentore_id, score),
+            )
+
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 def get_matchings(utilisateur_id):
     """Historique des matchings où l'utilisateur est mentor ou mentoré."""
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(
-        """
-        SELECT m.*,
-               u1.nom AS nom_mentor, u1.prenom AS prenom_mentor, u1.photo AS photo_mentor,
-               u1.filiere AS filiere_mentor, u1.niveau AS niveau_mentor,
-               u2.nom AS nom_mentore, u2.prenom AS prenom_mentore, u2.photo AS photo_mentore,
-               u2.filiere AS filiere_mentore, u2.niveau AS niveau_mentore
-        FROM matching m
-        JOIN utilisateur u1 ON m.mentor_id = u1.id
-        JOIN utilisateur u2 ON m.mentore_id = u2.id
-        WHERE m.mentor_id = %s OR m.mentore_id = %s
-        ORDER BY m.score DESC
-        """,
-        (utilisateur_id, utilisateur_id),
-    )
-    matchings = cursor.fetchall()
-    conn.close()
-    return matchings
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT m.*,
+                   u1.nom AS nom_mentor, u1.prenom AS prenom_mentor, u1.photo AS photo_mentor,
+                   u1.filiere AS filiere_mentor, u1.niveau AS niveau_mentor,
+                   u2.nom AS nom_mentore, u2.prenom AS prenom_mentore, u2.photo AS photo_mentore,
+                   u2.filiere AS filiere_mentore, u2.niveau AS niveau_mentore
+            FROM matching m
+            JOIN utilisateur u1 ON m.mentor_id = u1.id
+            JOIN utilisateur u2 ON m.mentore_id = u2.id
+            WHERE m.mentor_id = %s OR m.mentore_id = %s
+            ORDER BY m.score DESC
+            """,
+            (utilisateur_id, utilisateur_id),
+        )
+        matchings = cursor.fetchall()
+        return matchings
+    finally:
+        conn.close()

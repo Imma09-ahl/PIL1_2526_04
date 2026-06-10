@@ -13,52 +13,68 @@ def get_db():
 
 def create_user(nom, prenom, email, telephone, mot_de_passe):
     conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO utilisateur (nom, prenom, email, telephone, mot_de_passe)
-        VALUES (%s, %s, %s, %s, %s)
-    """, (nom, prenom, email, telephone, mot_de_passe))
-    conn.commit()
-    conn.close()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO utilisateur (nom, prenom, email, telephone, mot_de_passe)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (nom, prenom, email, telephone, mot_de_passe))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 def get_user_by_email(email):
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM utilisateur WHERE email = %s", (email,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM utilisateur WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        return user
+    finally:
+        conn.close()
 
 
 def get_user_by_telephone(telephone):
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM utilisateur WHERE telephone = %s", (telephone,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM utilisateur WHERE telephone = %s", (telephone,))
+        user = cursor.fetchone()
+        return user
+    finally:
+        conn.close()
 
 
 def get_user_by_id(user_id):
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM utilisateur WHERE id = %s", (user_id,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM utilisateur WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        return user
+    finally:
+        conn.close()
 
 
 def update_user(user_id, nom, prenom, email, telephone, filiere, niveau, bio, photo):
     conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("""
-        UPDATE utilisateur 
-        SET nom = %s, prenom = %s, email = %s, telephone = %s, 
-            filiere = %s, niveau = %s, bio = %s, photo = %s
-        WHERE id = %s
-    """, (nom, prenom, email, telephone, filiere, niveau, bio, photo, user_id))
-    conn.commit()
-    conn.close()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE utilisateur
+            SET nom = %s, prenom = %s, email = %s, telephone = %s,
+                filiere = %s, niveau = %s, bio = %s, photo = %s
+            WHERE id = %s
+        """, (nom, prenom, email, telephone, filiere, niveau, bio, photo, user_id))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 def get_user_full_profile(user_id):
