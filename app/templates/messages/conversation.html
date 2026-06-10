@@ -1,40 +1,211 @@
-{% extends "layouts/app_layout.html" %}
-{% block title %}Conversation avec {{ other.prenom }} — IFRI MentorLink{% endblock %}
+{% extends "layouts/app_sidebar_layout.html" %}
 
-{% block content %}
-<div class="max-w-3xl mx-auto space-y-md messages-fade-in" data-conversation-id="{{ conversation_id }}" data-user-id="{{ session.user_id }}">
+{% block title %}Conversation — IFRI MentorLink{% endblock %}
 
-    <div class="flex items-center gap-md">
-        <a class="text-primary dark:text-secondary hover:opacity-80" href="{{ url_for('messages.index') }}">
-            <span class="material-symbols-outlined">arrow_back</span>
-        </a>
-        <h1 class="font-headline-lg text-xl text-primary dark:text-secondary">
-            {{ other.prenom }} {{ other.nom }}
-        </h1>
-    </div>
+{% block page_title %}Conversation avec {{ other.prenom }} {{ other.nom }}{% endblock %}
 
-    <div class="messages-list bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-lg h-[28rem] overflow-y-auto flex flex-col gap-sm" id="messages-list">
-        {% for message in messages %}
-            <div class="message-bubble {% if message.expediteur_id == session.user_id %}message-moi{% else %}message-autre{% endif %}" data-message-id="{{ message.id }}">
-                {% if message.expediteur_id != session.user_id %}
-                    <span class="message-auteur text-xs font-bold opacity-70">{{ message.prenom }}</span>
-                {% endif %}
-                <p class="message-contenu">{{ message.contenu }}</p>
-                <span class="message-date text-xs opacity-60">{{ message.created_at.strftime('%H:%M') if message.created_at.strftime else message.created_at }}</span>
-            </div>
-        {% endfor %}
-    </div>
-
-    <form class="message-form flex gap-sm items-end" method="POST" action="{{ url_for('messages.conversation', conversation_id=conversation_id) }}">
-        <textarea class="flex-1 rounded-xl border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm resize-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary" name="contenu" placeholder="Écrire un message..." required maxlength="2000" rows="2"></textarea>
-        <button class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-md hover:opacity-90 shrink-0 flex items-center gap-xs" type="submit">
-            <span class="material-symbols-outlined text-base">send</span>
-            Envoyer
-        </button>
-    </form>
-</div>
+{% block header_actions %}
+<a href="{{ url_for('messages.index') }}" class="flex items-center gap-xs text-primary dark:text-secondary hover:underline text-sm">
+    <span class="material-symbols-outlined text-base">arrow_back</span>
+    Retour aux conversations
+</a>
 {% endblock %}
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg h-[calc(100vh-200px)]">
+    
+    <!-- Chat Area (2/3) -->
+    <div class="lg:col-span-2 bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl flex flex-col">
+        
+        <!-- Chat Header -->
+        <div class="p-lg border-b border-outline-variant flex items-center gap-md">
+            <div class="w-10 h-10 rounded-full bg-primary/10 border-2 border-secondary flex items-center justify-center font-bold text-primary dark:text-secondary">
+                {{ other.prenom[0] }}{{ other.nom[0] }}
+            </div>
+            <div>
+                <h3 class="font-bold text-on-surface dark:text-gray-100">{{ other.prenom }} {{ other.nom }}</h3>
+                <p class="text-xs text-on-surface-variant dark:text-gray-400">En ligne</p>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="messages-container" class="flex-1 overflow-y-auto p-lg space-y-md">
+            {% if messages %}
+                {% for msg in messages %}
+                <div class="flex {% if msg.expediteur_id == session.user_id %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="max-w-[70%] {% if msg.expediteur_id == session.user_id %}bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary{% else %}bg-surface-container-low dark:bg-[#1f2937] text-on-surface dark:text-gray-100{% endif %} rounded-xl p-md space-y-xs">
+                        {% if msg.expediteur_id != session.user_id %}
+                        <p class="text-xs font-bold">{{ msg.prenom }} {{ msg.nom }}</p>
+                        {% endif %}
+                        <p class="text-sm break-words">{{ msg.contenu }}</p>
+                        <p class="text-xs opacity-70">
+                            {{ msg.created_at.strftime('%H:%M') }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-xl">
+                    <span class="material-symbols-outlined text-5xl text-gray-400">chat</span>
+                    <p class="text-on-surface-variant dark:text-gray-400 mt-md">
+                        Aucun message pour le moment. Commencez la conversation !
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Message Input -->
+        <div class="p-lg border-t border-outline-variant">
+            <form id="message-form" method="POST" class="flex gap-md">
+                <input 
+                    type="text" 
+                    name="contenu" 
+                    id="message-input"
+                    placeholder="Écrivez votre message..."
+                    class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent"
+                    required
+                    maxlength="2000"
+                    autocomplete="off"
+                />
+                <button 
+                    type="submit"
+                    class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-lg px-lg py-sm hover:opacity-90 flex items-center gap-xs transition-all"
+                >
+                    <span class="material-symbols-outlined">send</span>
+                    Envoyer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Info Sidebar (1/3) -->
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-lg space-y-lg">
+        <div class="text-center space-y-md">
+            <div class="w-20 h-20 rounded-full bg-primary/10 border-4 border-secondary flex items-center justify-center font-bold text-primary dark:text-secondary text-2xl mx-auto">
+                {{ other.prenom[0] }}{{ other.nom[0] }}
+            </div>
+            <div>
+                <h3 class="font-headline-lg text-xl text-on-surface dark:text-gray-100">
+                    {{ other.prenom }} {{ other.nom }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="space-y-sm pt-md border-t border-outline-variant">
+            <h4 class="text-sm font-bold text-primary dark:text-secondary flex items-center gap-xs">
+                <span class="material-symbols-outlined text-base">info</span>
+                Informations
+            </h4>
+            <p class="text-sm text-on-surface-variant dark:text-gray-400">
+                Utilisez cette messagerie pour échanger sur vos sessions de mentorat, poser des questions ou partager des ressources.
+            </p>
+        </div>
+
+        <div class="space-y-sm pt-md border-t border-outline-variant">
+            <h4 class="text-sm font-bold text-primary dark:text-secondary flex items-center gap-xs">
+                <span class="material-symbols-outlined text-base">tips_and_updates</span>
+                Conseils
+            </h4>
+            <ul class="text-xs text-on-surface-variant dark:text-gray-400 space-y-xs list-disc list-inside">
+                <li>Soyez respectueux et courtois</li>
+                <li>Planifiez vos sessions à l'avance</li>
+                <li>Partagez des ressources utiles</li>
+                <li>Donnez des retours constructifs</li>
+            </ul>
+        </div>
+
+        <a href="{{ url_for('messages.index') }}" 
+           class="w-full flex items-center justify-center gap-xs font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-lg px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+            Toutes les conversations
+        </a>
+    </div>
+
+</div>
+
+<script>
+// Auto-scroll to bottom on load
+const container = document.getElementById('messages-container');
+if (container) {
+    container.scrollTop = container.scrollHeight;
+}
+
+// AJAX form submission
+const form = document.getElementById('message-form');
+const input = document.getElementById('message-input');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const contenu = input.value.trim();
+    if (!contenu) return;
+    
+    try {
+        const response = await fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: `contenu=${encodeURIComponent(contenu)}`
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Add message to UI
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex justify-end';
+            messageDiv.innerHTML = `
+                <div class="max-w-[70%] bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-xl p-md space-y-xs">
+                    <p class="text-sm break-words">${escapeHtml(data.contenu)}</p>
+                    <p class="text-xs opacity-70">${new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</p>
+                </div>
+            `;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            // Clear input
+            input.value = '';
+        }
+    } catch (error) {
+        console.error('Error sending message:', error);
+    }
+});
+
+// Poll for new messages every 3 seconds
+let lastMessageId = {{ messages[-1].id if messages else 0 }};
+
+setInterval(async () => {
+    try {
+        const response = await fetch(`{{ url_for('messages.nouveaux_messages', conversation_id=conversation_id) }}?last_id=${lastMessageId}`);
+        const data = await response.json();
+        
+        if (data.messages && data.messages.length > 0) {
+            data.messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'flex justify-start';
+                messageDiv.innerHTML = `
+                    <div class="max-w-[70%] bg-surface-container-low dark:bg-[#1f2937] text-on-surface dark:text-gray-100 rounded-xl p-md space-y-xs">
+                        <p class="text-xs font-bold">${escapeHtml(msg.prenom)} ${escapeHtml(msg.nom)}</p>
+                        <p class="text-sm break-words">${escapeHtml(msg.contenu)}</p>
+                        <p class="text-xs opacity-70">${new Date(msg.created_at).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</p>
+                    </div>
+                `;
+                container.appendChild(messageDiv);
+                lastMessageId = msg.id;
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+    } catch (error) {
+        console.error('Error polling messages:', error);
+    }
+}, 3000);
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
 {% endblock %}

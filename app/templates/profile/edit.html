@@ -1,6 +1,8 @@
-{% extends "layouts/app_layout.html" %}
+{% extends "layouts/app_sidebar_layout.html" %}
 
 {% block title %}Modifier mon profil — IFRI MentorLink{% endblock %}
+
+{% block page_title %}Modifier mon profil{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto space-y-lg profile-fade-in">
@@ -108,10 +110,19 @@
                 <p class="text-sm text-on-surface-variant italic">Aucune matière renseignée</p>
             {% endfor %}
         </div>
-        <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="flex gap-sm">
+        <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="space-y-sm">
             <input type="hidden" name="type" value="fort">
-            <input class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" name="matiere" placeholder="Ex. Algorithmique" required maxlength="100">
-            <button class="font-bold bg-secondary text-on-secondary rounded-full px-lg py-sm hover:opacity-90" type="submit">Ajouter</button>
+            <div class="flex gap-sm">
+                <select class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" name="matiere" id="matiere-fort" required>
+                    <option value="">— Choisir une matière —</option>
+                    {% for matiere in matieres_predefinies %}
+                        <option value="{{ matiere }}">{{ matiere }}</option>
+                    {% endfor %}
+                    <option value="__autre__">✏️ Autre (saisir manuellement)</option>
+                </select>
+                <button class="font-bold bg-secondary text-on-secondary rounded-full px-lg py-sm hover:opacity-90" type="submit">Ajouter</button>
+            </div>
+            <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm hidden" name="matiere_custom" id="matiere-fort-custom" placeholder="Saisir le nom de la matière" maxlength="100">
         </form>
     </div>
 
@@ -132,10 +143,19 @@
                 <p class="text-sm text-on-surface-variant italic">Aucune matière renseignée</p>
             {% endfor %}
         </div>
-        <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="flex gap-sm">
+        <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="space-y-sm">
             <input type="hidden" name="type" value="faible">
-            <input class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" name="matiere" placeholder="Ex. Bases de données" required maxlength="100">
-            <button class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90" type="submit">Ajouter</button>
+            <div class="flex gap-sm">
+                <select class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" name="matiere" id="matiere-faible" required>
+                    <option value="">— Choisir une matière —</option>
+                    {% for matiere in matieres_predefinies %}
+                        <option value="{{ matiere }}">{{ matiere }}</option>
+                    {% endfor %}
+                    <option value="__autre__">✏️ Autre (saisir manuellement)</option>
+                </select>
+                <button class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90" type="submit">Ajouter</button>
+            </div>
+            <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm hidden" name="matiere_custom" id="matiere-faible-custom" placeholder="Saisir le nom de la matière" maxlength="100">
         </form>
     </div>
 
@@ -181,4 +201,53 @@
     </div>
 
 </div>
+
+{% block scripts %}
+<script>
+// Handle custom matiere input for forces
+document.getElementById('matiere-fort').addEventListener('change', function() {
+    const customInput = document.getElementById('matiere-fort-custom');
+    if (this.value === '__autre__') {
+        customInput.classList.remove('hidden');
+        customInput.required = true;
+        this.required = false;
+    } else {
+        customInput.classList.add('hidden');
+        customInput.required = false;
+        this.required = true;
+    }
+});
+
+// Handle custom matiere input for faiblesses
+document.getElementById('matiere-faible').addEventListener('change', function() {
+    const customInput = document.getElementById('matiere-faible-custom');
+    if (this.value === '__autre__') {
+        customInput.classList.remove('hidden');
+        customInput.required = true;
+        this.required = false;
+    } else {
+        customInput.classList.add('hidden');
+        customInput.required = false;
+        this.required = true;
+    }
+});
+
+// Handle form submission to use custom value if selected
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        const select = this.querySelector('select[name="matiere"]');
+        const customInput = this.querySelector('input[name="matiere_custom"]');
+        
+        if (select && customInput && select.value === '__autre__') {
+            if (customInput.value.trim()) {
+                select.value = customInput.value.trim();
+            } else {
+                e.preventDefault();
+                alert('Veuillez saisir le nom de la matière');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}

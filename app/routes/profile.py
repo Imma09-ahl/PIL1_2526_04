@@ -37,6 +37,28 @@ profile_bp = Blueprint('profile', __name__)
 
 FILIERES = ['IA', 'IM', 'GL', 'SE&IoT', 'SI']
 NIVEAUX = ['L1', 'L2', 'L3']
+MATIERES_PREDEFINIES = [
+    'Algorithme',
+    'Python',
+    'Java',
+    'C/C++',
+    'JavaScript',
+    'Analyse combinatoire',
+    'Équations différentielles',
+    'Algèbre linéaire',
+    'Probabilités et statistiques',
+    'Base de données',
+    'Réseaux informatiques',
+    'Systèmes d\'exploitation',
+    'Intelligence artificielle',
+    'Machine Learning',
+    'Développement web',
+    'Développement mobile',
+    'Génie logiciel',
+    'Architecture logicielle',
+    'Sécurité informatique',
+    'Cloud computing',
+]
 EMAIL_PATTERN = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 TELEPHONE_PATTERN = re.compile(r'^(\+229|00229|229)?[0-9]{8,10}$')
 
@@ -211,6 +233,7 @@ def edit_profile():
         filieres=FILIERES,
         niveaux=NIVEAUX,
         jours=JOURS_VALIDES,
+        matieres_predefinies=MATIERES_PREDEFINIES,
         errors={},
     )
 

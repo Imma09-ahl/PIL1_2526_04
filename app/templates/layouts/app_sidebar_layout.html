@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}IFRI MentorLink{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1a237e",
+                        secondary: "#00c853",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        background: "#f9f9fb",
+                        surface: "#ffffff",
+                        "on-background": "#1a1c1d",
+                        "on-surface": "#1a1c1d",
+                        "outline-variant": "#e2e2e4",
+                        "surface-container-low": "#f3f3f5",
+                        "primary-container": "#e8eaf6",
+                        "on-primary-container": "#1a237e"
+                    },
+                    borderRadius: { DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px" },
+                    spacing: { sm: "12px", lg: "24px", md: "16px", xl: "32px" },
+                    fontFamily: {
+                        "body-md": ["Lora", "serif"],
+                        "headline-lg": ["Playfair Display", "serif"],
+                        "display-lg": ["Playfair Display", "serif"]
+                    },
+                    maxWidth: { "container-max": "1280px" }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .dark { background-color: #0a0f1e; color: #f9f9fb; }
+        .dark body { background-color: #0a0f1e; }
+        .dark .bg-background { background-color: #0a0f1e; }
+        .dark .bg-surface { background-color: #111827; }
+        .dark .bg-surface-container-low { background-color: #1f2937; }
+        .dark .text-on-background { color: #f9f9fb; }
+        .dark .text-on-surface { color: #f9f9fb; }
+        .dark .border-outline-variant { border-color: #374151; }
+        .sidebar-link { transition: all 0.2s; }
+        .sidebar-link:hover { background-color: rgba(26, 35, 126, 0.1); }
+        .dark .sidebar-link:hover { background-color: rgba(0, 200, 83, 0.1); }
+        .sidebar-link.active { background-color: rgba(26, 35, 126, 0.15); border-left: 3px solid #1a237e; }
+        .dark .sidebar-link.active { background-color: rgba(0, 200, 83, 0.15); border-left-color: #00c853; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-background text-on-background min-h-screen flex font-body-md transition-colors duration-300">
+
+<!-- Sidebar -->
+<aside class="w-64 bg-surface dark:bg-[#111827] border-r border-outline-variant flex flex-col fixed h-screen">
+    <!-- Logo -->
+    <div class="p-lg border-b border-outline-variant">
+        <a class="flex items-center gap-sm hover:opacity-80 transition-opacity" href="/">
+            <span class="material-symbols-outlined text-primary dark:text-secondary text-3xl">school</span>
+            <span class="font-headline-lg text-lg text-primary dark:text-secondary font-bold">IFRI MentorLink</span>
+        </a>
+    </div>
+
+    <!-- User Info -->
+    <div class="p-lg border-b border-outline-variant">
+        <div class="flex items-center gap-sm">
+            {% if session.user_photo %}
+            <img class="w-10 h-10 rounded-full object-cover border-2 border-secondary" src="{{ url_for('static', filename='uploads/' + session.user_photo) }}" alt="Photo">
+            {% else %}
+            <div class="w-10 h-10 rounded-full bg-primary/10 border-2 border-secondary flex items-center justify-center font-bold text-primary dark:text-secondary text-sm">
+                {{ session.user_prenom[0] if session.user_prenom else 'U' }}{{ session.user_nom[0] if session.user_nom else 'U' }}
+            </div>
+            {% endif %}
+            <div class="flex-1 min-w-0">
+                <p class="font-bold text-on-surface dark:text-gray-100 text-sm truncate">{{ session.user_prenom }} {{ session.user_nom }}</p>
+                <p class="text-xs text-on-surface-variant dark:text-gray-400 truncate">{{ session.user_email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 p-md space-y-xs overflow-y-auto">
+        <a class="sidebar-link flex items-center gap-md px-md py-sm rounded-lg text-on-surface dark:text-gray-200 {% if request.endpoint and 'dashboard' in request.endpoint %}active{% endif %}" href="{{ url_for('dashboard.dashboard') }}">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="font-medium">Tableau de bord</span>
+        </a>
+        <a class="sidebar-link flex items-center gap-md px-md py-sm rounded-lg text-on-surface dark:text-gray-200 {% if request.endpoint and 'profile' in request.endpoint %}active{% endif %}" href="{{ url_for('profile.view_profile') }}">
+            <span class="material-symbols-outlined">person</span>
+            <span class="font-medium">Mon Profil</span>
+        </a>
+        <a class="sidebar-link flex items-center gap-md px-md py-sm rounded-lg text-on-surface dark:text-gray-200 {% if request.endpoint and 'matching' in request.endpoint %}active{% endif %}" href="{{ url_for('matching.resultats') }}">
+            <span class="material-symbols-outlined">group</span>
+            <span class="font-medium">Matching</span>
+        </a>
+        <a class="sidebar-link flex items-center gap-md px-md py-sm rounded-lg text-on-surface dark:text-gray-200 {% if request.endpoint and 'messages' in request.endpoint %}active{% endif %}" href="{{ url_for('messages.index') }}">
+            <span class="material-symbols-outlined">chat</span>
+            <span class="font-medium">Messagerie</span>
+        </a>
+        
+        <div class="pt-md mt-md border-t border-outline-variant">
+            <a class="sidebar-link flex items-center gap-md px-md py-sm rounded-lg text-on-surface dark:text-gray-200" href="/">
+                <span class="material-symbols-outlined">home</span>
+                <span class="font-medium">Accueil</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Footer Actions -->
+    <div class="p-md border-t border-outline-variant space-y-sm">
+        <button class="w-full flex items-center justify-center gap-sm text-on-surface-variant dark:text-on-surface hover:bg-surface-container-low rounded-lg p-sm transition-colors" id="theme-toggle" type="button">
+            <span class="material-symbols-outlined" id="theme-toggle-dark-icon">dark_mode</span>
+            <span class="material-symbols-outlined hidden" id="theme-toggle-light-icon">light_mode</span>
+            <span class="text-sm font-medium">Thème</span>
+        </button>
+        <a class="w-full flex items-center justify-center gap-sm font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-lg px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm" href="{{ url_for('auth.logout') }}">
+            <span class="material-symbols-outlined text-base">logout</span>
+            Déconnexion
+        </a>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<div class="flex-1 ml-64 flex flex-col min-h-screen">
+    <!-- Top Bar (optional, for mobile or additional actions) -->
+    <header class="bg-surface dark:bg-[#0a0f1e] border-b border-outline-variant sticky top-0 z-40 px-lg py-md">
+        <div class="flex justify-between items-center">
+            <h1 class="font-headline-lg text-xl text-primary dark:text-secondary">{% block page_title %}{% endblock %}</h1>
+            <div class="flex items-center gap-md">
+                {% block header_actions %}{% endblock %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow p-xl">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-lg space-y-sm" role="alert">
+                    {% for category, message in messages %}
+                        <div class="flex items-start gap-sm p-md rounded-lg text-sm
+                            {% if category == 'error' %}bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800
+                            {% else %}bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800{% endif %}">
+                            <span class="material-symbols-outlined text-base shrink-0">
+                                {% if category == 'error' %}error{% else %}check_circle{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-md text-center text-xs text-on-surface-variant dark:text-gray-500 border-t border-outline-variant">
+        © 2026 IFRI MentorLink — Projet PIL1 2025-2026
+    </footer>
+</div>
+
+<script>
+// Theme toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+    if (!btn) return;
+    
+    const apply = (theme) => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            lightIcon.classList.remove('hidden');
+            darkIcon.classList.add('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            darkIcon.classList.remove('hidden');
+            lightIcon.classList.add('hidden');
+        }
+    };
+    
+    const saved = localStorage.getItem('color-theme') || 'dark';
+    apply(saved);
+    
+    btn.addEventListener('click', () => {
+        const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+        localStorage.setItem('color-theme', newTheme);
+        apply(newTheme);
+    });
+});
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
