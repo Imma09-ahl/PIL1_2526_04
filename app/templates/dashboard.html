@@ -1,6 +1,130 @@
-{% extends "base.html" %}
+{% extends "layouts/app_layout.html" %}
 
-{% block title %}Tableau de bord{% endblock %}
+{% block title %}Tableau de bord — IFRI MentorLink{% endblock %}
 
 {% block content %}
+<div class="space-y-xl dashboard-fade-in">
+
+    <div class="space-y-sm">
+        <h1 class="font-display-lg text-3xl md:text-4xl text-primary dark:text-secondary">
+            Bonjour, {{ user.prenom }} !
+        </h1>
+        <p class="text-on-surface-variant dark:text-gray-400">
+            Voici le résumé de votre compte MentorLink.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+        <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-lg flex items-center gap-md">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary dark:text-secondary">person</span>
+            </div>
+            <div>
+                <p class="text-xs text-on-surface-variant dark:text-gray-500 uppercase tracking-wider">Compte</p>
+                <p class="font-bold text-on-surface dark:text-gray-100">{{ user.prenom }} {{ user.nom }}</p>
+            </div>
+        </div>
+        <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-lg flex items-center gap-md">
+            <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-secondary">mail</span>
+            </div>
+            <div class="min-w-0">
+                <p class="text-xs text-on-surface-variant dark:text-gray-500 uppercase tracking-wider">E-mail</p>
+                <p class="font-bold text-on-surface dark:text-gray-100 truncate">{{ user.email }}</p>
+            </div>
+        </div>
+        <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-lg flex items-center gap-md">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary dark:text-secondary">call</span>
+            </div>
+            <div>
+                <p class="text-xs text-on-surface-variant dark:text-gray-500 uppercase tracking-wider">Téléphone</p>
+                <p class="font-bold text-on-surface dark:text-gray-100">{{ user.telephone }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-lg">
+            <h2 class="font-headline-lg text-xl text-primary dark:text-secondary flex items-center gap-sm">
+                <span class="material-symbols-outlined">badge</span>
+                Informations du profil
+            </h2>
+            <dl class="space-y-md text-sm">
+                <div class="flex justify-between gap-md border-b border-outline-variant pb-sm">
+                    <dt class="text-on-surface-variant dark:text-gray-400">Filière</dt>
+                    <dd class="font-medium text-on-surface dark:text-gray-100">
+                        {{ user.filiere if user.filiere else '— Non renseignée' }}
+                    </dd>
+                </div>
+                <div class="flex justify-between gap-md border-b border-outline-variant pb-sm">
+                    <dt class="text-on-surface-variant dark:text-gray-400">Niveau</dt>
+                    <dd class="font-medium text-on-surface dark:text-gray-100">
+                        {{ user.niveau if user.niveau else '— Non renseigné' }}
+                    </dd>
+                </div>
+                <div class="flex justify-between gap-md border-b border-outline-variant pb-sm">
+                    <dt class="text-on-surface-variant dark:text-gray-400">Bio</dt>
+                    <dd class="font-medium text-on-surface dark:text-gray-100 text-right max-w-[60%]">
+                        {{ user.bio if user.bio else '— Non renseignée' }}
+                    </dd>
+                </div>
+                <div class="flex justify-between gap-md">
+                    <dt class="text-on-surface-variant dark:text-gray-400">Membre depuis</dt>
+                    <dd class="font-medium text-on-surface dark:text-gray-100">
+                        {% if user.created_at %}
+                            {{ user.created_at.strftime('%d/%m/%Y') }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-lg">
+            <h2 class="font-headline-lg text-xl text-primary dark:text-secondary flex items-center gap-sm">
+                <span class="material-symbols-outlined">trending_up</span>
+                Complétion du profil
+            </h2>
+            <div class="space-y-sm">
+                <div class="flex justify-between text-sm">
+                    <span class="text-on-surface-variant dark:text-gray-400">Progression</span>
+                    <span class="font-bold text-primary dark:text-secondary" id="completion-label">{{ completion }}%</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-low dark:bg-[#1f2937] rounded-full overflow-hidden">
+                    <div
+                        class="h-full bg-secondary rounded-full transition-all duration-700"
+                        id="completion-bar"
+                        style="width: {{ completion }}%"
+                    ></div>
+                </div>
+            </div>
+            {% if completion < 100 %}
+            <p class="text-sm text-on-surface-variant dark:text-gray-400">
+                Complétez votre filière, niveau et bio pour améliorer vos matchs de mentorat.
+            </p>
+            {% else %}
+            <p class="text-sm text-secondary font-medium">
+                Votre profil est complet. Vous êtes prêt(e) pour le mentorat !
+            </p>
+            {% endif %}
+
+            <div class="pt-md space-y-sm">
+                <h3 class="text-sm font-bold text-on-surface dark:text-gray-200">Actions rapides</h3>
+                <div class="flex flex-wrap gap-sm">
+                    <a class="inline-flex items-center gap-xs font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90 transition-all text-sm" href="/">
+                        <span class="material-symbols-outlined text-base">home</span>
+                        Accueil
+                    </a>
+                    <a class="inline-flex items-center gap-xs font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-lg py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm" href="{{ url_for('auth.logout') }}">
+                        <span class="material-symbols-outlined text-base">logout</span>
+                        Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

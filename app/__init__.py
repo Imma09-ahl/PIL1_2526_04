@@ -15,7 +15,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(competences_bp)
-    app.register_blueprint(matching_bp)   
+    app.register_blueprint(matching_bp)
     app.register_blueprint(messages_bp)
     app.register_blueprint(dashboard_bp)
 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}IFRI MentorLink{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1a237e",
+                        secondary: "#00c853",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        background: "#f9f9fb",
+                        surface: "#ffffff",
+                        "on-background": "#1a1c1d",
+                        "on-surface": "#1a1c1d",
+                        "outline-variant": "#e2e2e4",
+                        "surface-container-low": "#f3f3f5",
+                        "primary-container": "#e8eaf6",
+                        "on-primary-container": "#1a237e"
+                    },
+                    borderRadius: { DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px" },
+                    spacing: { sm: "12px", lg: "24px", md: "16px", xl: "32px" },
+                    fontFamily: {
+                        "body-md": ["Lora", "serif"],
+                        "headline-lg": ["Playfair Display", "serif"],
+                        "display-lg": ["Playfair Display", "serif"]
+                    },
+                    maxWidth: { "container-max": "1280px" }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .dark { background-color: #0a0f1e; color: #f9f9fb; }
+        .dark body { background-color: #0a0f1e; }
+        .dark .bg-background { background-color: #0a0f1e; }
+        .dark .bg-surface { background-color: #111827; }
+        .dark .bg-surface-container-low { background-color: #1f2937; }
+        .dark .text-on-background { color: #f9f9fb; }
+        .dark .text-on-surface { color: #f9f9fb; }
+        .dark .border-outline-variant { border-color: #374151; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md transition-colors duration-300">
+
+<header class="w-full border-b border-outline-variant bg-surface dark:bg-[#0a0f1e] sticky top-0 z-50">
+    <div class="flex justify-between items-center px-lg py-md max-w-container-max mx-auto">
+        <a class="flex items-center gap-sm hover:opacity-80 transition-opacity" href="{{ url_for('dashboard.dashboard') }}">
+            <span class="material-symbols-outlined text-primary dark:text-secondary text-3xl">school</span>
+            <span class="font-headline-lg text-xl text-primary dark:text-secondary font-bold">IFRI MentorLink</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-lg text-sm">
+            <a class="text-primary dark:text-secondary font-bold" href="{{ url_for('dashboard.dashboard') }}">Tableau de bord</a>
+            <a class="text-on-surface-variant dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors" href="/">Accueil</a>
+        </nav>
+        <div class="flex items-center gap-md">
+            <span class="hidden sm:block text-sm text-on-surface-variant dark:text-gray-300">
+                {{ session.user_prenom }} {{ session.user_nom }}
+            </span>
+            <a class="font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-md py-sm hover:bg-primary-container dark:hover:bg-primary/20 transition-all text-sm" href="{{ url_for('auth.logout') }}">
+                Déconnexion
+            </a>
+            <button class="text-on-surface-variant dark:text-on-surface hover:bg-surface-container-low rounded-full p-2 transition-colors cursor-pointer" id="theme-toggle" type="button">
+                <span class="material-symbols-outlined" id="theme-toggle-dark-icon">dark_mode</span>
+                <span class="material-symbols-outlined hidden" id="theme-toggle-light-icon">light_mode</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow max-w-container-max mx-auto w-full px-lg py-xl">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mb-lg space-y-sm" role="alert">
+                {% for category, message in messages %}
+                    <div class="flex items-start gap-sm p-md rounded-lg text-sm
+                        {% if category == 'error' %}bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800
+                        {% else %}bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800{% endif %}">
+                        <span class="material-symbols-outlined text-base shrink-0">
+                            {% if category == 'error' %}error{% else %}check_circle{% endif %}
+                        </span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="py-md text-center text-xs text-on-surface-variant dark:text-gray-500 border-t border-outline-variant">
+    © 2026 IFRI MentorLink — Projet PIL1 2025-2026
+</footer>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
