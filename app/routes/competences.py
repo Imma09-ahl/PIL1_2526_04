@@ -4,7 +4,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 
 from app.models.competences import (
     add_competence,
-    delete_competence_utilisateur,
+    delete_competence_for_user,
     get_competences,
 )
 from app.models.disponibilite import (
@@ -110,7 +110,7 @@ def supprimer():
     if not competence_id:
         flash('Identifiant de matière manquant.', 'error')
     else:
-        delete_competence_utilisateur(competence_id, user_id)
+        delete_competence_for_user(competence_id, user_id)
         flash('Matière supprimée.', 'success')
 
     return redirect(url_for('competences.index'))

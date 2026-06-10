@@ -96,3 +96,43 @@ def get_user_full_profile(user_id):
         'faiblesses': faiblesses,
         'disponibilites': get_disponibilites(user_id),
     }
+
+def update_password(user_id, new_password_hash):
+    """Met à jour le mot de passe d'un utilisateur."""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE utilisateur 
+            SET mot_de_passe = %s
+            WHERE id = %s
+            """,
+            (new_password_hash, user_id)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+def update_format_mentorat(user_id, format_mentorat):
+    """Met à jour le format de mentorat préféré d'un utilisateur."""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE utilisateur 
+            SET format_mentorat = %s
+            WHERE id = %s
+            """,
+            (format_mentorat, user_id)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
