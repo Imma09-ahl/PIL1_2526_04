@@ -28,6 +28,17 @@ def get_user_by_email(email):
     user = cursor.fetchone()
     conn.close()
     return user
+
+
+def get_user_by_telephone(telephone):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM utilisateur WHERE telephone = %s", (telephone,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+
 def get_user_by_id(user_id):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -51,20 +62,21 @@ def update_user(user_id, nom, prenom, email, telephone, filiere, niveau, bio, ph
 
 
 def get_user_full_profile(user_id):
-    """Récupère l'utilisateur + ses compétences"""
+    """Récupère l'utilisateur, compétences et disponibilités."""
     from .competences import get_competences
-    
+    from .disponibilite import get_disponibilites
+
     user = get_user_by_id(user_id)
     if not user:
         return None
-    
+
     competences = get_competences(user_id)
     forces = [c for c in competences if c['type'] == 'fort']
     faiblesses = [c for c in competences if c['type'] == 'faible']
-    
+
     return {
         'user': user,
         'forces': forces,
         'faiblesses': faiblesses,
-        'disponibilites': [],
+        'disponibilites': get_disponibilites(user_id),
     }

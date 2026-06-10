@@ -1,111 +1,184 @@
-{% extends "base.html" %}
+{% extends "layouts/app_layout.html" %}
 
-{% block title %}Modifier mon profil{% endblock %}
+{% block title %}Modifier mon profil — IFRI MentorLink{% endblock %}
 
 {% block content %}
-<div class="edit-container">
-    <h1>⚙️ Modifier mon profil</h1>
-    
-    <form method="POST" action="{{ url_for('profile.edit_profile', user_id=user.id) }}" class="edit-form">
-        
-        <!-- Informations personnelles -->
-        <div class="card">
-            <h2>👤 Informations</h2>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nom</label>
-                    <input type="text" name="nom" value="{{ user.nom }}" required>
+<div class="max-w-3xl mx-auto space-y-lg profile-fade-in">
+
+    <div class="space-y-sm">
+        <h1 class="font-display-lg text-2xl md:text-3xl text-primary dark:text-secondary">Modifier mon profil</h1>
+        <p class="text-sm text-on-surface-variant dark:text-gray-400">Mettez à jour vos informations personnelles et académiques.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('profile.edit_profile') }}" enctype="multipart/form-data" class="space-y-lg">
+
+        <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-md">
+            <h2 class="font-headline-lg text-lg text-primary dark:text-secondary flex items-center gap-sm">
+                <span class="material-symbols-outlined">person</span>
+                Informations personnelles
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                <div>
+                    <label class="block text-sm font-medium mb-xs" for="nom">Nom <span class="text-red-500">*</span></label>
+                    <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary {% if errors.nom %}border-red-500{% endif %}" id="nom" name="nom" type="text" value="{{ user.nom }}" required>
+                    {% if errors.nom %}<p class="mt-xs text-xs text-red-600">{{ errors.nom }}</p>{% endif %}
                 </div>
-                <div class="form-group">
-                    <label>Prénom</label>
-                    <input type="text" name="prenom" value="{{ user.prenom }}" required>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" value="{{ user.email }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Téléphone</label>
-                    <input type="tel" name="telephone" value="{{ user.telephone }}" required>
+                <div>
+                    <label class="block text-sm font-medium mb-xs" for="prenom">Prénom <span class="text-red-500">*</span></label>
+                    <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary {% if errors.prenom %}border-red-500{% endif %}" id="prenom" name="prenom" type="text" value="{{ user.prenom }}" required>
+                    {% if errors.prenom %}<p class="mt-xs text-xs text-red-600">{{ errors.prenom }}</p>{% endif %}
                 </div>
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Filière</label>
-                    <select name="filiere" required>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                <div>
+                    <label class="block text-sm font-medium mb-xs" for="email">E-mail <span class="text-red-500">*</span></label>
+                    <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary {% if errors.email %}border-red-500{% endif %}" id="email" name="email" type="email" value="{{ user.email }}" required>
+                    {% if errors.email %}<p class="mt-xs text-xs text-red-600">{{ errors.email }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-xs" for="telephone">Téléphone <span class="text-red-500">*</span></label>
+                    <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary {% if errors.telephone %}border-red-500{% endif %}" id="telephone" name="telephone" type="tel" value="{{ user.telephone }}" required>
+                    {% if errors.telephone %}<p class="mt-xs text-xs text-red-600">{{ errors.telephone }}</p>{% endif %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                <div>
+                    <label class="block text-sm font-medium mb-xs" for="filiere">Filière <span class="text-red-500">*</span></label>
+                    <select class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary {% if errors.filiere %}border-red-500{% endif %}" id="filiere" name="filiere" required>
+                        <option value="">— Choisir —</option>
                         {% for f in filieres %}
                             <option value="{{ f }}" {% if user.filiere == f %}selected{% endif %}>{{ f }}</option>
                         {% endfor %}
                     </select>
+                    {% if errors.filiere %}<p class="mt-xs text-xs text-red-600">{{ errors.filiere }}</p>{% endif %}
                 </div>
-                <div class="form-group">
-                    <label>Niveau</label>
-                    <select name="niveau" required>
+                <div>
+                    <label class="block text-sm font-medium mb-xs" for="niveau">Niveau <span class="text-red-500">*</span></label>
+                    <select class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary {% if errors.niveau %}border-red-500{% endif %}" id="niveau" name="niveau" required>
+                        <option value="">— Choisir —</option>
                         {% for n in niveaux %}
                             <option value="{{ n }}" {% if user.niveau == n %}selected{% endif %}>{{ n }}</option>
                         {% endfor %}
                     </select>
+                    {% if errors.niveau %}<p class="mt-xs text-xs text-red-600">{{ errors.niveau }}</p>{% endif %}
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label>Photo (URL)</label>
-                <input type="text" name="photo" value="{{ user.photo or '' }}" placeholder="nom_fichier.jpg">
+
+            <div>
+                <label class="block text-sm font-medium mb-xs" for="photo_file">Photo de profil</label>
+                <input class="w-full text-sm text-on-surface-variant file:mr-md file:py-sm file:px-md file:rounded-full file:border-0 file:bg-primary file:text-white dark:file:bg-secondary dark:file:text-on-secondary" id="photo_file" name="photo_file" type="file" accept="image/png,image/jpeg,image/gif,image/webp">
+                <input type="hidden" name="photo" value="{{ user.photo or '' }}">
             </div>
-            
-            <div class="form-group">
-                <label>Bio</label>
-                <textarea name="bio" rows="3" placeholder="Parle-nous de toi...">{{ user.bio or '' }}</textarea>
+
+            <div>
+                <label class="block text-sm font-medium mb-xs" for="bio">Bio</label>
+                <textarea class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm focus:ring-2 focus:ring-primary dark:focus:ring-secondary {% if errors.bio %}border-red-500{% endif %}" id="bio" name="bio" rows="3" maxlength="500" placeholder="Parlez de vos centres d'intérêt académiques...">{{ user.bio or '' }}</textarea>
+                {% if errors.bio %}<p class="mt-xs text-xs text-red-600">{{ errors.bio }}</p>{% endif %}
             </div>
         </div>
-        
-        <!-- Forces -->
-        <div class="card">
-            <h2>✅ Je peux aider en</h2>
-            <div class="tags-edit">
-                {% for f in forces %}
-                    <span class="tag tag-force">
-                        {{ f.matiere }}
-                        <a href="{{ url_for('profile.delete_user_competence', competence_id=f.id, user_id=user.id) }}" class="remove">✕</a>
-                    </span>
-                {% endfor %}
-            </div>
-            <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="inline-form">
-                <input type="hidden" name="user_id" value="{{ user.id }}">
-                <input type="hidden" name="type" value="fort">
-                <input type="text" name="matiere" placeholder="Nouvelle compétence..." required>
-                <button type="submit" class="btn-small">+</button>
-            </form>
-        </div>
-        
-        <!-- Faiblesses -->
-        <div class="card">
-            <h2>❓ J'ai besoin d'aide en</h2>
-            <div class="tags-edit">
-                {% for f in faiblesses %}
-                    <span class="tag tag-weak">
-                        {{ f.matiere }}
-                        <a href="{{ url_for('profile.delete_user_competence', competence_id=f.id, user_id=user.id) }}" class="remove">✕</a>
-                    </span>
-                {% endfor %}
-            </div>
-            <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="inline-form">
-                <input type="hidden" name="user_id" value="{{ user.id }}">
-                <input type="hidden" name="type" value="faible">
-                <input type="text" name="matiere" placeholder="Nouveau besoin..." required>
-                <button type="submit" class="btn-small">+</button>
-            </form>
-        </div>
-        
-        <div class="actions">
-            <button type="submit" class="btn-primary">💾 Enregistrer</button>
-            <a href="{{ url_for('profile.view_profile', user_id=user.id) }}" class="btn-secondary">Annuler</a>
+
+        <div class="flex flex-wrap gap-md">
+            <button class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-xl py-md hover:opacity-90 transition-all" type="submit">
+                Enregistrer les modifications
+            </button>
+            <a class="font-bold text-primary dark:text-secondary border border-primary dark:border-secondary rounded-full px-xl py-md hover:bg-primary-container dark:hover:bg-primary/20 transition-all" href="{{ url_for('profile.view_profile') }}">
+                Annuler
+            </a>
         </div>
     </form>
+
+    <!-- Compétences (formulaires séparés — pas de formulaire imbriqué) -->
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-md">
+        <h2 class="font-headline-lg text-lg text-secondary flex items-center gap-sm">
+            <span class="material-symbols-outlined">check_circle</span>
+            Matières maîtrisées
+        </h2>
+        <div class="flex flex-wrap gap-sm mb-md">
+            {% for f in forces %}
+                <span class="tag-force flex items-center gap-xs">
+                    {{ f.matiere }}
+                    <form method="POST" action="{{ url_for('profile.delete_user_competence', competence_id=f.id) }}" class="inline">
+                        <button type="submit" class="text-secondary hover:opacity-70" aria-label="Supprimer">&times;</button>
+                    </form>
+                </span>
+            {% else %}
+                <p class="text-sm text-on-surface-variant italic">Aucune matière renseignée</p>
+            {% endfor %}
+        </div>
+        <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="flex gap-sm">
+            <input type="hidden" name="type" value="fort">
+            <input class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" name="matiere" placeholder="Ex. Algorithmique" required maxlength="100">
+            <button class="font-bold bg-secondary text-on-secondary rounded-full px-lg py-sm hover:opacity-90" type="submit">Ajouter</button>
+        </form>
+    </div>
+
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-md">
+        <h2 class="font-headline-lg text-lg text-red-500 flex items-center gap-sm">
+            <span class="material-symbols-outlined">help</span>
+            Matières où j'ai besoin d'aide
+        </h2>
+        <div class="flex flex-wrap gap-sm mb-md">
+            {% for f in faiblesses %}
+                <span class="tag-weak flex items-center gap-xs">
+                    {{ f.matiere }}
+                    <form method="POST" action="{{ url_for('profile.delete_user_competence', competence_id=f.id) }}" class="inline">
+                        <button type="submit" class="text-red-500 hover:opacity-70" aria-label="Supprimer">&times;</button>
+                    </form>
+                </span>
+            {% else %}
+                <p class="text-sm text-on-surface-variant italic">Aucune matière renseignée</p>
+            {% endfor %}
+        </div>
+        <form method="POST" action="{{ url_for('profile.add_user_competence') }}" class="flex gap-sm">
+            <input type="hidden" name="type" value="faible">
+            <input class="flex-1 rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" name="matiere" placeholder="Ex. Bases de données" required maxlength="100">
+            <button class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90" type="submit">Ajouter</button>
+        </form>
+    </div>
+
+    <!-- Disponibilités -->
+    <div class="bg-surface dark:bg-[#111827] border border-outline-variant rounded-xl p-xl space-y-md">
+        <h2 class="font-headline-lg text-lg text-primary dark:text-secondary flex items-center gap-sm">
+            <span class="material-symbols-outlined">schedule</span>
+            Disponibilités horaires
+        </h2>
+        {% if disponibilites %}
+            <ul class="space-y-sm">
+                {% for d in disponibilites %}
+                    <li class="flex items-center justify-between gap-md p-md bg-surface-container-low dark:bg-[#1f2937] rounded-lg text-sm">
+                        <span><strong class="text-primary dark:text-secondary">{{ d.jour }}</strong> — {{ d.heure_debut_fmt }} à {{ d.heure_fin_fmt }}</span>
+                        <form method="POST" action="{{ url_for('profile.delete_user_disponibilite', disponibilite_id=d.id) }}">
+                            <button type="submit" class="text-red-500 hover:opacity-70 text-sm">Supprimer</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-sm text-on-surface-variant italic">Aucun créneau renseigné</p>
+        {% endif %}
+        <form method="POST" action="{{ url_for('profile.add_user_disponibilite') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-sm items-end">
+            <div>
+                <label class="block text-xs font-medium mb-xs" for="jour">Jour</label>
+                <select class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" id="jour" name="jour" required>
+                    {% for j in jours %}
+                        <option value="{{ j }}">{{ j }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium mb-xs" for="heure_debut">Début</label>
+                <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" id="heure_debut" name="heure_debut" type="time" required>
+            </div>
+            <div>
+                <label class="block text-xs font-medium mb-xs" for="heure_fin">Fin</label>
+                <input class="w-full rounded-lg border border-outline-variant bg-surface-container-low dark:bg-[#1f2937] dark:text-gray-100 px-md py-sm" id="heure_fin" name="heure_fin" type="time" required>
+            </div>
+            <button class="font-bold bg-primary dark:bg-secondary text-on-primary dark:text-on-secondary rounded-full px-lg py-sm hover:opacity-90" type="submit">Ajouter</button>
+        </form>
+    </div>
+
 </div>
 {% endblock %}
