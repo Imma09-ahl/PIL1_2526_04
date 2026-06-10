@@ -126,7 +126,7 @@ Application accessible sur : **http://localhost:5000**
 | `feature/messagerie` | Akpo Sara, Olufadé Ayilara | Messagerie |
 | `main` | — | Branche d'intégration |
 
-## Procédure de fusion (à faire plus tard)
+## Procédure de fusion
 
 ```bash
 git checkout main
