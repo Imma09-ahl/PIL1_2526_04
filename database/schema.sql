@@ -35,6 +35,18 @@ CREATE TABLE disponibilite (
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id)
 );
 
+-- Table offres/demandes de mentorat
+CREATE TABLE mentoring (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    utilisateur_id INT NOT NULL,
+    type ENUM('offre', 'demande') NOT NULL,
+    matiere VARCHAR(100) NOT NULL,
+    format ENUM('presentiel', 'enligne', 'les_deux') NOT NULL,
+    statut ENUM('ouvert', 'ferme') DEFAULT 'ouvert',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id)
+);
+
 -- Table matching
 CREATE TABLE matching (
     id INT AUTO_INCREMENT PRIMARY KEY,
